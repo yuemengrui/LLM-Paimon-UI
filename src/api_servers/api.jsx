@@ -16,13 +16,13 @@ export async function get_llm_answer(prompt, model_name = "") {
             "stream": "False"
         })
     }
-    console.log('env', process.env.NEXT_PUBLIC_LLM_CHAT_URL)
+
     const response = await http(process.env.NEXT_PUBLIC_LLM_CHAT_URL, args)
 
     console.log('response', response)
 
     if (response) {
-        return response['data']['answer']
+        return response['data']
     }
 }
 

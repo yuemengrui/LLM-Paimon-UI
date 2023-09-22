@@ -1,4 +1,3 @@
-import AppContextProvider from "@/components/AppContext"
 import './globals.css'
 import type {Metadata} from 'next'
 
@@ -16,7 +15,7 @@ export default function RootLayout({
     return (
         <html lang="zh">
         <body>
-        <AppContextProvider>{children}</AppContextProvider>
+        {children}
         </body>
         </html>
     )

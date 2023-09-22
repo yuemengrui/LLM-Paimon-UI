@@ -1,22 +1,22 @@
 import ChatInput from "@/components/Chat/ChatInput";
 import Welcome from "@/components/Chat/Welcome";
 import MessageList from "@/components/Chat/MessagesList";
-import {useAppContext} from "@/components/AppContext"
+import {useState} from "react";
 
 export function Chat() {
-    const {
-        state: {messageList}
-    } = useAppContext()
+    const [messageList, setMessageList] = useState([])
+
+    const addMessage = (msg: any) => {
+        // @ts-ignore
+        setMessageList((prevList: any[]) => [...prevList, msg])
+    }
 
     return (
-        //  bg-gradient-to-r from-pink-50 to-pink-200
         <div className='flex-1 relative'>
             <main className='overflow-y-auto w-full h-full text-gray-900'>
-                {messageList.length ? (<MessageList/>) : (<Welcome/>)}
-                <ChatInput/>
+                {messageList.length ? (<MessageList messageList={messageList} />) : (<Welcome/>)}
+                <ChatInput addMessage={addMessage}/>
             </main>
         </div>
-
-
     )
 }

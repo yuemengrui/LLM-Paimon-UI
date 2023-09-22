@@ -7,17 +7,11 @@ import RainbowText from "@/components/common/RainbowText";
 import {useRef, useState} from "react"
 import {v4 as uuidv4} from "uuid"
 import {Message} from '@/types/chat'
-import {useAppContext} from "@/components/AppContext"
-import { ActionType } from "@/reducers/AppReducer"
 import {get_llm_answer} from "@/api_servers/api";
 
-export default function ChatInput() {
+// @ts-ignore
+export default function ChatInput({addMessage}) {
     const [messageText, setMessageText] = useState("")
-
-    const {
-        state: {messageList, currentModel},
-        dispatch
-    } = useAppContext()
 
     async function send() {
         const message: Message = {
@@ -26,16 +20,17 @@ export default function ChatInput() {
             content: messageText
         }
         setMessageText("")
-        dispatch({ type: ActionType.ADD_MESSAGE, message })
+        addMessage(message)
 
         const llm_answer = await get_llm_answer(messageText)
 
         const responseMessage: Message = {
             id: uuidv4(),
             role: "assistant",
-            content: llm_answer
+            content: llm_answer['answer'],
+            usage: llm_answer['usage']
         }
-        dispatch({ type: ActionType.ADD_MESSAGE, message: responseMessage })
+        addMessage(responseMessage)
 
     }
 
@@ -72,7 +67,6 @@ export default function ChatInput() {
                         placeholder='输入一条消息...'
                         rows={1}
                         value={messageText}
-                        // onKeyUp={handleEnter}
                         onKeyDown={handleEnter}
                         onChange={(e) => {
                             if (!(e.target.value === '\n')) {
