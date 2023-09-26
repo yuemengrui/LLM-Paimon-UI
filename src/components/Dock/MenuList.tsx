@@ -1,7 +1,7 @@
 import { PiChatCircleDotsBold } from "react-icons/pi";
 import { PiDatabaseBold } from "react-icons/pi";
 import { PiGearBold } from "react-icons/pi";
-export default function AppList() {
+export default function MenuList() {
     return (
         <div className='flex flex-col gap-4 text-pink-400 text-xs py-8 px-3'>
             <button className='hover:bg-pink-50'>

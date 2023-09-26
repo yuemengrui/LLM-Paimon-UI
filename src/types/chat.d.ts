@@ -10,6 +10,7 @@ export interface Message {
     role: "user" | "assistant"
     content?: string
     usage?: object
+    response?: object
 }
 
 export interface ChatRequestBody {

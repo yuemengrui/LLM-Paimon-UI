@@ -1,10 +1,8 @@
 import Button from "@/components/common/Button"
-import {MdRefresh} from "react-icons/md"
 import {PiLightningFill} from "react-icons/pi"
 import {FiSend} from "react-icons/fi"
 import TextareaAutoSize from "react-textarea-autosize"
-import RainbowText from "@/components/common/RainbowText";
-import {useRef, useState} from "react"
+import {useState} from "react"
 import {v4 as uuidv4} from "uuid"
 import {Message} from '@/types/chat'
 import {get_llm_answer} from "@/api_servers/api";
@@ -28,7 +26,8 @@ export default function ChatInput({addMessage}) {
             id: uuidv4(),
             role: "assistant",
             content: llm_answer['answer'],
-            usage: llm_answer['usage']
+            usage: llm_answer['usage'],
+            response: llm_answer
         }
         addMessage(responseMessage)
 
@@ -47,18 +46,10 @@ export default function ChatInput({addMessage}) {
     }
 
     return (
-        <div
-            className='absolute bottom-0 inset-x-0  pt-10 dark:from-[rgba(53,55,64,0)] dark:to-[#353740] dark:to-[58.85%]'>
+        <div className='absolute bottom-6 inset-x-0'>
             <div className='w-full max-w-4xl mx-auto flex flex-col items-center px-4 space-y-4'>
-                {/*<Button*/}
-                {/*    icon={MdRefresh}*/}
-                {/*    variant='primary'*/}
-                {/*    className='font-medium'*/}
-                {/*>*/}
-                {/*    重新生成*/}
-                {/*</Button>*/}
                 <div
-                    className='flex items-end w-full border border-black/10 dark:border-gray-800/50 bg-blue-200 dark:bg-gray-700 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0.1)] py-2'>
+                    className='flex items-end w-full border border-back/10 bg-blue-200 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0.1)] py-2'>
                     <div className='mx-3 mb-2.5'>
                         <PiLightningFill/>
                     </div>
@@ -82,10 +73,6 @@ export default function ChatInput({addMessage}) {
                         onClick={send}
                     />
                 </div>
-                <footer className='flex-1 text-center text-sm text-gray-700 dark:text-gray-300 px-4 pb-6'>
-                    ©️{new Date().getFullYear()}&nbsp;{" "}
-                    <RainbowText text="YueMengRui"/>
-                </footer>
             </div>
         </div>
     )

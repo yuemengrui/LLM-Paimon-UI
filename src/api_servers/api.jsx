@@ -1,5 +1,4 @@
 async function http(url, args) {
-    console.log('url', url)
     const response = await fetch(url, args)
     return await response.json()
 }
