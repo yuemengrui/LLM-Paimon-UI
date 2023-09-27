@@ -6,7 +6,7 @@ type ButtonProps = {
     variant?: "default" | "outline" | "text" | "primary"
 } & ComponentPropsWithoutRef<"button">
 
-export default function Button({
+export default function MyButton({
                                    children,
                                    className = "",
                                    icon: Icon,

@@ -1,6 +1,6 @@
 import { MdOutlineTipsAndUpdates } from "react-icons/md"
 import examples from "@/data/examples.json"
-import Button from "@/components/common/Button"
+import MyButton from "@/components/common/MyButton"
 import { useMemo, useState } from "react"
 
 export default function Example() {
@@ -21,7 +21,7 @@ export default function Example() {
                 {list.map((item) => {
                     return (
                         <li key={item.act}>
-                            <Button>{item.act}</Button>
+                            <MyButton>{item.act}</MyButton>
                         </li>
                     )
                 })}
@@ -31,14 +31,14 @@ export default function Example() {
                     <p className='p-2'>...</p>
                     <div className='flex items-center w-full space-x-2'>
                         <hr className='flex-1 border-t border-dotted border-gray-200 dark:border-gray-600' />
-                        <Button
+                        <MyButton
                             variant='text'
                             onClick={() => {
                                 setShowFull(true)
                             }}
                         >
                             显示全部
-                        </Button>
+                        </MyButton>
                         <hr className='flex-1 border-t border-dotted border-gray-200 dark:border-gray-600' />
                     </div>
                 </>
