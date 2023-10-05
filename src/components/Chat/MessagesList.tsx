@@ -11,7 +11,7 @@ import {LuPenLine} from "react-icons/lu";
 import {CiStar} from "react-icons/ci";
 import ChatButton from "@/components/ChatButton/ChatButton";
 import {Message} from '@/types/chat'
-import {get_llm_answer} from "@/api_servers/api";
+import {chat} from "@/api_servers/chat";
 import {v4 as uuidv4} from "uuid";
 import toast, {Toaster} from 'react-hot-toast';
 import {
@@ -44,7 +44,7 @@ export default function MessageList({messageList, addMessage, delMessage}) {
     async function Regenerate(prompt: any) {
         delMessage()
 
-        const llm_answer = await get_llm_answer(prompt)
+        const llm_answer = await chat(prompt)
 
         const responseMessage: Message = {
             id: uuidv4(),
@@ -118,7 +118,7 @@ export default function MessageList({messageList, addMessage, delMessage}) {
                                             </Flex>
                                         </div>
                                         <div
-                                            className='bg-blue-100 rounded-lg shadow-[0_2px_2px_2px_rgba(96,165,250,0.3)] text-base mt-3 mr-6 text-right px-2 py-2 max-w-fit ml-auto'>
+                                            className='bg-blue-100 rounded-lg shadow-[0_2px_2px_2px_rgba(96,165,250,0.3)] text-base mt-3 text-right px-2 py-2 max-w-fit ml-auto'>
                                             <Markdown>{message.content}</Markdown>
                                         </div>
                                     </div>
@@ -126,7 +126,7 @@ export default function MessageList({messageList, addMessage, delMessage}) {
                                 {message.role == 'assistant' && (
                                     <div>
                                         <div>
-                                            <Flex gap={3} w={'100%'} alignItems={'flex-end'} justifyContent={'flex-start'}>
+                                            <Flex gap={3} w={'100%'} alignItems={'center'} justifyContent={'flex-start'}>
                                                 <div
                                                     className='text-3xl bg-white border rounded-lg border-gray-100 shadow-[0_0_1px_1px_rgba(0,0,0,0.2)]'>
                                                     <SiOpenai/></div>
@@ -154,7 +154,7 @@ export default function MessageList({messageList, addMessage, delMessage}) {
                                             </Flex>
                                         </div>
                                         <div
-                                            className='bg-pink-100 rounded-lg shadow-[0_2px_2px_2px_rgba(244,114,182,0.3)] text-base mt-3 ml-6 px-2 py-2'>
+                                            className='bg-pink-100 rounded-lg shadow-[0_2px_2px_2px_rgba(244,114,182,0.3)] text-base mt-3 px-2 py-2'>
                                             <Markdown>{message.content}</Markdown>
                                             <Flex alignItems='center' mt='4' flexWrap='wrap' gap='2'>
                                                 <MyTooltip label='本次回答所关联的上下文对数'>

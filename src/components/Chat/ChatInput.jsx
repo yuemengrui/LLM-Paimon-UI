@@ -4,15 +4,13 @@ import {FiSend} from "react-icons/fi"
 import TextareaAutoSize from "react-textarea-autosize"
 import {useState} from "react"
 import {v4 as uuidv4} from "uuid"
-import {Message} from '@/types/chat'
-import {get_llm_answer} from "@/api_servers/api";
+import {chat} from "@/api_servers/chat";
 
-// @ts-ignore
 export default function ChatInput({addMessage}) {
     const [messageText, setMessageText] = useState("")
 
     async function send() {
-        const message: Message = {
+        const message = {
             id: uuidv4(),
             role: "user",
             content: messageText
@@ -20,9 +18,9 @@ export default function ChatInput({addMessage}) {
         setMessageText("")
         addMessage(message)
 
-        const llm_answer = await get_llm_answer(messageText)
+        const llm_answer = await chat(messageText)
 
-        const responseMessage: Message = {
+        const responseMessage = {
             id: uuidv4(),
             role: "assistant",
             content: llm_answer['answer'],
@@ -33,11 +31,11 @@ export default function ChatInput({addMessage}) {
 
     }
 
-    function handleEnter(e: KeyboardEvent) {
-        if (e.metaKey && e.code == 'Enter') {
+    function handleEnter(e) {
+        if (e.metaKey && e.code === 'Enter') {
             setMessageText(messageText + '\n')
         } else {
-            if (e.code == 'Enter') {
+            if (e.code === 'Enter') {
                 if (messageText) {
                     send()
                 }

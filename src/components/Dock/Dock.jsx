@@ -1,9 +1,12 @@
+'use client'
 import React, { useState, useEffect } from 'react';
 import MenuList from "@/components/Dock/MenuList";
 import Avatar from "@/components/Dock/Avatar";
+import {useRouter} from "next/navigation";
 
-const Dock = () => {
+export function Dock(props) {
     const [isDockVisible, setDockVisible] = useState(false);
+    const router = useRouter()
 
     useEffect(() => {
         const handleMouseMove = (event) => {
@@ -28,9 +31,9 @@ const Dock = () => {
                 <div className='absolute'>
                     <Avatar />
                     <hr className='mt-4'/>
-                    <MenuList />
+                    <MenuList {...props}/>
                     <footer className='text-center text-[8px] fixed bottom-2 w-[72px]'>
-                        <div>YueMengRui</div>
+                        <div>月梦睿</div>
                         <div>
                             ©️{new Date().getFullYear()}&nbsp;{" "}
                         </div>
@@ -38,6 +41,5 @@ const Dock = () => {
                 </div>
             </div>
     );
-};
+}
 
-export default Dock;

@@ -1,9 +1,6 @@
-async function http(url, args) {
-    const response = await fetch(url, args)
-    return await response.json()
-}
+import {http} from '@/api_servers/http'
 
-export async function get_llm_answer(prompt, model_name = "") {
+export async function chat(prompt, model_name = "") {
     const args = {
         method: "POST",
         headers: {
@@ -16,7 +13,7 @@ export async function get_llm_answer(prompt, model_name = "") {
         })
     }
 
-    const response = await http(process.env.NEXT_PUBLIC_LLM_CHAT_URL, args)
+    const response = await http(process.env.NEXT_PUBLIC_Prefix + process.env.NEXT_PUBLIC_LLM_CHAT_URL, args)
 
     console.log('response', response)
 

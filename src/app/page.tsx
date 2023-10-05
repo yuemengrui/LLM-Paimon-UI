@@ -1,14 +1,21 @@
 "use client"
 
-import {Chat} from "@/components/Chat/Chat";
-import Dock from "@/components/Dock/Dock";
+
+import {useEffect, useState} from "react";
+import {redirect, useRouter} from 'next/navigation';
 
 export default function Home() {
+    const router = useRouter()
 
-    return (
-        <div className='flex w-full h-full'>
-            <Dock />
-            <Chat/>
-        </div>
-    )
+    useEffect(() => {
+        // router.prefetch('/auth')
+        if (!localStorage.getItem('Authorization')) {
+            router.push('/auth')
+        }
+    }, []);
+
+    const [selectMenuId, setSelectMenuId] = useState(0)
+
+    redirect('/chat')
+
 }
