@@ -4,9 +4,8 @@ import {FiSend} from "react-icons/fi"
 import TextareaAutoSize from "react-textarea-autosize"
 import {useState} from "react"
 import {v4 as uuidv4} from "uuid"
-import {chat} from "@/api_servers/chat";
 
-export default function ChatInput({addMessage}) {
+export default function ChatInput({selectAppId, selectChatId, addMessage, updateMessage}) {
     const [messageText, setMessageText] = useState("")
 
     async function send() {
@@ -18,17 +17,54 @@ export default function ChatInput({addMessage}) {
         setMessageText("")
         addMessage(message)
 
-        const llm_answer = await chat(messageText)
-
         const responseMessage = {
             id: uuidv4(),
             role: "assistant",
-            content: llm_answer['answer'],
-            usage: llm_answer['usage'],
-            response: llm_answer
+            content: "正在思考中...",
+            usage: {},
+            response: {},
+            time_cost: "0s"
         }
         addMessage(responseMessage)
 
+
+        const response = await fetch(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_LLM_CHAT, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": localStorage.getItem("Authorization")
+            },
+            body: JSON.stringify({
+                "app_id": selectAppId,
+                "chat_id": selectChatId,
+                "uid": message.id,
+                "answer_uid": responseMessage.id,
+                "prompt": messageText,
+                "model_name": undefined
+            })
+        })
+
+        const decoder = new TextDecoder("utf-8")
+
+        const reader = response.body.getReader()
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+                break;
+            }
+            // 解码内容
+            const res = JSON.parse(decoder.decode(value))
+
+            updateMessage({
+                id: responseMessage.id,
+                role: responseMessage.role,
+                content: res['answer'],
+                usage: res['usage'],
+                response: res,
+                time_cost: res['time_cost']
+            })
+        }
     }
 
     function handleEnter(e) {

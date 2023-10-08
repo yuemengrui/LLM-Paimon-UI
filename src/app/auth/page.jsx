@@ -8,23 +8,29 @@ import {
 } from '@chakra-ui/react'
 import {useEffect, useState} from "react";
 import { useRouter } from 'next/navigation';
+import {auth} from "../../api_servers/auth";
 
 export default function Auth() {
     const router = useRouter();
 
-    const [acct, setAcct] = useState('')
+    const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [isDisabled, setIsDisabled] = useState(true)
 
     useEffect(() => {
-        if (acct && password) {
+        if (username && password) {
             setIsDisabled(false)
         }
-    }, [acct, password]);
+    }, [username, password]);
 
-    function login() {
-        localStorage.setItem("Authorization", "666666")
-        router.push('/chat')
+    async function login() {
+        const response = await auth(username, password)
+        console.log('response', response)
+
+        if (response && response.token) {
+            localStorage.setItem("Authorization", response.token)
+            router.push('/chat')
+        }
     }
 
     return (
@@ -34,7 +40,7 @@ export default function Auth() {
                     <Flex gap={3} align={"center"} direction={"column"}>
                         <FormControl>
                             <FormLabel>账号</FormLabel>
-                            <Input value={acct} onChange={(e) => {setAcct(e.target.value)}} />
+                            <Input value={username} onChange={(e) => {setUsername(e.target.value)}} />
                         </FormControl>
                         <FormControl>
                             <FormLabel>密码</FormLabel>

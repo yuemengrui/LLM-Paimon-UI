@@ -164,7 +164,7 @@ export default function MessageList({messageList, addMessage, delMessage}) {
                                                     <Tag text={message.usage['total_tokens'] + ' tokens'}/>
                                                 </MyTooltip>
                                                 <MyTooltip label='本次请求所用时间'>
-                                                    <Tag text='30s'/>
+                                                    <Tag text={message.time_cost}/>
                                                 </MyTooltip>
                                                 <MyTooltip label='点击查看完整响应'>
                                                     <Tag text='完整响应' onClick={() => showFullResponse(message.response)}/>

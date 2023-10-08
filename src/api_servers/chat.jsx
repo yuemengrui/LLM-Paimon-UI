@@ -13,7 +13,24 @@ export async function chat(prompt, model_name = "") {
         })
     }
 
-    const response = await http(process.env.NEXT_PUBLIC_Prefix + process.env.NEXT_PUBLIC_LLM_CHAT_URL, args)
+    const response = await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_LLM_CHAT, args)
+
+    console.log('response', response)
+
+    if (response) {
+        return response['data']
+    }
+}
+
+export async function llmList() {
+    const args = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }
+
+    const response = await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_LLM_LIST, args)
 
     console.log('response', response)
 

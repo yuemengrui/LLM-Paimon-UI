@@ -3,7 +3,9 @@ import {Flex} from "@chakra-ui/react";
 import {PiBroom} from "react-icons/pi";
 import {PiChatTeardropDotsThin} from "react-icons/pi";
 
-export default function ChatSidebar({ appName, chatList, selectChatId, setSelectChatId }) {
+
+export default function ChatSidebar({ selectAppId, appName, chatList, selectChatId, setSelectChatId, newChat }) {
+
 
     return (
         <div className='w-[320px] rounded-l-3xl px-6 py-6'>
@@ -14,7 +16,7 @@ export default function ChatSidebar({ appName, chatList, selectChatId, setSelect
                 <div className='ml-4'>{appName}</div>
             </Flex>
             <Flex alignItems={'center'} mt={12}>
-                <button
+                <button onClick={newChat}
                     className='w-[156px]  border rounded-lg border-gray-100 shadow-[0_0_2px_2px_rgba(0,0,0,0.1)] px-4 py-1 hover:text-pink-400 hover:bg-pink-100'>
                     <Flex alignItems={'center'} textAlign={'center'}>
                         <PiChatTeardropDotsThin className='ml-6'/><span className='ml-2'>新对话</span>
@@ -34,7 +36,7 @@ export default function ChatSidebar({ appName, chatList, selectChatId, setSelect
                             onClick={() => setSelectChatId(item.id)}
                         >
                             <Flex alignItems={'center'} textAlign={'center'}>
-                                <PiChatTeardropDotsThin className='ml-2'/><span className='ml-2'>{item.title}</span>
+                                <PiChatTeardropDotsThin className='ml-2'/><span className='ml-2'>{item.name}</span>
                             </Flex>
                         </button>
                     )

@@ -5,15 +5,88 @@ export async function get_app_list() {
     const args = {
         method: "GET",
         headers: {
-            "token":"xxx"
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('Authorization')
         }
     }
 
-    const response = await http(process.env.NEXT_PUBLIC_LLM_CHAT_URL, args)
+    const response = await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_APP_LIST, args)
 
     console.log('response', response)
 
     if (response) {
-        return response['data']
+        return response['list']
+    }
+    else {
+        return []
+    }
+}
+
+
+export async function get_app_chat_list(app_id) {
+    const args = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('Authorization')
+        },
+        body: JSON.stringify({
+            "app_id": app_id,
+        })
+    }
+
+    const response = await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_APP_CHAT_LIST, args)
+
+    console.log('response', response)
+
+    if (response) {
+        return response['list']
+    }
+    else {
+        return []
+    }
+}
+
+
+export async function create_app_chat(app_id, name=undefined) {
+    const args = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('Authorization')
+        },
+        body: JSON.stringify({
+            "app_id": app_id,
+            "name": name
+        })
+    }
+
+    const response = await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_APP_CHAT_CREATE, args)
+
+    console.log('response', response)
+}
+
+
+export async function get_app_chat_message_list(chat_id) {
+    const args = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('Authorization')
+        },
+        body: JSON.stringify({
+            "chat_id": chat_id,
+        })
+    }
+
+    const response = await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_APP_CHAT_MESSAGE_LIST, args)
+
+    console.log('response', response)
+
+    if (response) {
+        return response['list']
+    }
+    else {
+        return []
     }
 }
