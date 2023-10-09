@@ -23,6 +23,26 @@ export async function get_app_list() {
 }
 
 
+export async function create_app(name, llm_name) {
+    const args = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('Authorization')
+        },
+        body: JSON.stringify({
+            "name": name,
+            "llm_name": llm_name
+        })
+    }
+
+    const response = await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_APP_CREATE, args)
+
+    console.log('response', response)
+}
+
+
+
 export async function get_app_chat_list(app_id) {
     const args = {
         method: "POST",

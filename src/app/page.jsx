@@ -8,19 +8,20 @@ import {auth_token_verify} from "@/api_servers/auth";
 export default function Home() {
     const router = useRouter()
 
-    useEffect( () => {
+    useEffect(  () => {
 
         async function auth_token() {
-            return await auth_token_verify()
-        }
+            const res = await auth_token_verify()
 
-        const res = auth_token()
-        if (res) {
-            router.push('/chat')
+            console.log('token_res', res)
+            if (res) {
+                router.push('/appstore')
+            }
+            else {
+                router.push('/auth')
+            }
         }
-        else {
-            router.push('/auth')
-        }
+        auth_token()
     }, []);
 
 }

@@ -22,20 +22,21 @@ export async function chat(prompt, model_name = "") {
     }
 }
 
-export async function llmList() {
+export async function get_llm_list() {
     const args = {
         method: "GET",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('Authorization')
         }
     }
 
     const response = await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_LLM_LIST, args)
 
-    console.log('response', response)
+    console.log('llm list response', response)
 
     if (response) {
-        return response['data']
+        return response['data']['model_list']
     }
 }
 

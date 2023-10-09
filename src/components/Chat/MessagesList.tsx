@@ -158,10 +158,10 @@ export default function MessageList({messageList, addMessage, delMessage}) {
                                             <Markdown>{message.content}</Markdown>
                                             <Flex alignItems='center' mt='4' flexWrap='wrap' gap='2'>
                                                 <MyTooltip label='本次回答所关联的上下文对数'>
-                                                    <Tag text='6对上下文'/>
+                                                    <Tag text={`${message.response.history ? message.response.history.length : 0}对上下文`}/>
                                                 </MyTooltip>
                                                 <MyTooltip label='本次请求总共使用的token数量'>
-                                                    <Tag text={message.usage['total_tokens'] + ' tokens'}/>
+                                                    <Tag text={message.usage.total_tokens + ' tokens'}/>
                                                 </MyTooltip>
                                                 <MyTooltip label='本次请求所用时间'>
                                                     <Tag text={message.time_cost}/>

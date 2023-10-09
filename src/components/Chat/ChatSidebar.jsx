@@ -2,9 +2,27 @@ import {SiOpenai} from "react-icons/si";
 import {Flex} from "@chakra-ui/react";
 import {PiBroom} from "react-icons/pi";
 import {PiChatTeardropDotsThin} from "react-icons/pi";
+import {IoIosClose} from "react-icons/io";
+import {LiaThumbtackSolid} from "react-icons/lia";
+import MyTooltip from "../Tooltip/Tooltip";
+import toast, {Toaster} from 'react-hot-toast';
 
 
-export default function ChatSidebar({ selectAppId, appName, chatList, selectChatId, setSelectChatId, newChat }) {
+export default function ChatSidebar({ appName, chatList, selectChatId, setSelectChatId, newChat }) {
+
+    function deleteChat(chat_id) {
+        toast('该功能正在实现中，请稍等...', {
+            duration: 2000,
+            position: 'top-center'
+        })
+    }
+
+    function topping(chat_id) {
+        toast('该功能正在实现中，请稍等...', {
+            duration: 2000,
+            position: 'top-center'
+        })
+    }
 
 
     return (
@@ -35,8 +53,25 @@ export default function ChatSidebar({ selectAppId, appName, chatList, selectChat
                             className={`${selectChatId === item.id ? 'shadow-[0_0_1px_1px_rgba(244,114,182,0.2)] text-pink-400 bg-pink-100' : 'hover:text-pink-300 hover:bg-blue-100'} w-full rounded-lg px-2 py-2 mt-4`}
                             onClick={() => setSelectChatId(item.id)}
                         >
-                            <Flex alignItems={'center'} textAlign={'center'}>
-                                <PiChatTeardropDotsThin className='ml-2'/><span className='ml-2'>{item.name}</span>
+                            <Flex position={'relative'} alignItems={'center'}>
+                                <PiChatTeardropDotsThin className='ml-2'/>
+                                <span className='ml-2'>{item.name || '新对话'}</span>
+                                <div
+                                    onClick={() => {topping(item.id)}}
+                                    className='absolute right-2'
+                                >
+                                    <MyTooltip label={item.isTopping? '取消置顶': '置顶'}>
+                                        <LiaThumbtackSolid />
+                                    </MyTooltip>
+                                    <Toaster/>
+                                </div>
+                                <div
+                                    onClick={() => {deleteChat(item.id)}}
+                                    className='absolute -right-2 -top-2 text-sm hover:text-red-600'
+                                >
+                                    <IoIosClose />
+                                    <Toaster/>
+                                </div>
                             </Flex>
                         </button>
                     )

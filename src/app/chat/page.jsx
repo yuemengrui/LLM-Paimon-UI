@@ -18,34 +18,48 @@ export default function Chat() {
     const [chatList, setChatList] = useState([])
     const [selectChatId, setSelectChatId] = useState(null)
 
-    useEffect( () => {
-        async function getAppList() {
-            const res = await get_app_list()
-            console.log('app list res', res)
-            if (res.length) {
-                setAppList(res)
-                setSelectAppId(res[0].id)
+    async function getAppList() {
+        const res = await get_app_list()
+        if (res && res.length) {
+            setAppList(res)
+            setSelectAppId(res[0].id)
+        }
+    }
 
-                const chat_list_res = await get_app_chat_list(res[0].id)
-
-                console.log('xx', chat_list_res)
-
-                if (chat_list_res.length) {
-                    setChatList(chat_list_res)
-                    setSelectChatId(chat_list_res[0].id)
-
-                    const message_list = await get_app_chat_message_list(chat_list_res[0].id)
-
-                    console.log('xxx', message_list)
-
-                    if (message_list.length) {
-                        setMessageList(message_list)
-                    }
-                }
+    async function getAppChatList(app_id){
+        if (app_id) {
+            const res = await get_app_chat_list(app_id)
+            if (res && res.length) {
+                setChatList(res)
+                setSelectChatId(res[0].id)
             }
         }
+    }
+
+    async function getAppChatMessageList(chat_id){
+        if (chat_id) {
+            const message_list = await get_app_chat_message_list(chat_id)
+            if (message_list && message_list.length) {
+                setMessageList(message_list)
+            }
+        }
+    }
+
+    useEffect( () => {
         getAppList()
     }, []);
+
+    useEffect(() => {
+        setSelectChatId(null)
+        setChatList([])
+        setMessageList([])
+        getAppChatList(selectAppId)
+    }, [selectAppId]);
+
+    useEffect(() => {
+        setMessageList([])
+        getAppChatMessageList(selectChatId)
+    }, [selectChatId]);
 
     async function newChat() {
         await create_app_chat(selectAppId)
@@ -76,20 +90,24 @@ export default function Chat() {
                         <AppList appList={appList} selectAppId={selectAppId} setSelectAppId={setSelectAppId} />
                         <div className='w-[1px] h-full bg-gray-200'/>
                         <div className='flex flex-1 border border-gray-200 bg-white rounded-3xl mt-4 mr-4 ml-4 mb-4'>
-                            <ChatSidebar selectAppId={selectAppId} appName={appList.filter((item) => item.id === selectAppId)[0].name} chatList={chatList} selectChatId={selectChatId} setSelectChatId={setSelectChatId} newChat={newChat} />
+                            <ChatSidebar appName={appList.filter((item) => item.id === selectAppId)[0].name} chatList={chatList} selectChatId={selectChatId} setSelectChatId={setSelectChatId} newChat={newChat} />
                             <div className='w-[1px] h-full bg-gray-200'/>
-                            <div className='w-full relative'>
-                                <div className='h-[64px] px-6 py-5'>
-                                    <Flex gap={3}>
-                                        <div>{chatList.length ? chatList.filter((item) => item.id === selectChatId)[0].name : null}</div>
-                                        <Tag text={messageList.length + '条记录'}/>
-                                        <Tag text={appList.filter((item) => item.id === selectAppId)[0].llm_name}/>
-                                    </Flex>
-                                </div>
-                                <div className='h-[1px] w-full bg-gray-200'/>
-                                {messageList.length ? (<MessageList messageList={messageList} addMessage={addMessage} delMessage={delMessage}/>) : (<Welcome/>)}
-                                <ChatInput selectAppId={selectAppId} selectChatId={selectChatId} addMessage={addMessage} updateMessage={updateMessage}/>
-                            </div>
+                            {selectChatId && (
+                                <>
+                                    <div className='w-full relative'>
+                                        <div className='h-[64px] px-6 py-5'>
+                                            <Flex gap={3}>
+                                                <div>{chatList.length ? chatList.filter((item) => item.id === selectChatId)[0].name || '新对话' : '新对话'}</div>
+                                                <Tag text={messageList.length + '条记录'}/>
+                                                <Tag text={appList.filter((item) => item.id === selectAppId)[0].llm_name}/>
+                                            </Flex>
+                                        </div>
+                                        <div className='h-[1px] w-full bg-gray-200'/>
+                                        {messageList.length ? (<MessageList messageList={messageList} addMessage={addMessage} delMessage={delMessage}/>) : (<Welcome/>)}
+                                        <ChatInput selectAppId={selectAppId} selectChatId={selectChatId} addMessage={addMessage} updateMessage={updateMessage}/>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                     </>
