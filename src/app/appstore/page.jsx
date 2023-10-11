@@ -3,6 +3,8 @@ import {useEffect, useState} from "react";
 import {get_app_list, create_app} from "../../api_servers/app";
 import {get_llm_list} from "../../api_servers/chat";
 import {
+    Grid,
+    Card,
     Button,
     Flex,
     Modal,
@@ -60,7 +62,7 @@ export default function AppStore() {
 
     function createNewApp() {
         if (appList.length >= 10) {
-            toast.error("只允许创建10个APP", {
+            toast.error("只允许创建10个应用", {
                 duration: 2000,
                 position: 'top-center'
             })
@@ -73,41 +75,51 @@ export default function AppStore() {
 
     return (
         <>
-            <div className='flex w-full bg-blue-50/30'>
-                <button
-                    onClick={createNewApp}
-                    className='ml-12 mt-6 w-[156px] h-[64px] bg-blue-100 border rounded-lg border-gray-100 shadow-[0_0_2px_2px_rgba(0,0,0,0.1)] px-4 py-1 hover:text-pink-400 hover:bg-pink-100'
+            <div className='flex-1 w-full bg-blue-50/30 border border-gray-200 bg-white rounded-3xl mt-4 mr-4 ml-4 mb-4'>
+                <Grid
+                    p={5}
+                    gridTemplateColumns={['1fr', 'repeat(3,1fr)', 'repeat(4,1fr)', 'repeat(5,1fr)']}
+                    gridGap={5}
                 >
-                    创建新APP
+                    {appList.map((item) => (
+                        <Card
+                            key={item.id}
+                            py={4}
+                            px={5}
+                            cursor={'pointer'}
+                            h={'140px'}
+                            bgColor={'pink.100'}
+                            position={'relative'}
+                        >
+                            <div className='text-center text-blue-500'>{item.name}</div>
+                            <div className='mt-14 text-center'>{item.llm_name}</div>
+                        </Card>
+                    ))}
+                </Grid>
+                <div
+                    className='relative'
+                >
+                    <button
+                        onClick={createNewApp}
+                        className='absolute left-1/2 translate-x-[-50%] w-[156px] h-[64px] bg-blue-100 border rounded-lg border-gray-100 shadow-[0_0_2px_2px_rgba(0,0,0,0.1)] px-4 py-1 hover:text-pink-400 hover:bg-pink-100'
+                    >
+                        创建新应用
+                    </button>
                     <Toaster/>
-                </button>
-                <Flex mt={2} ml={6} gap={6} flexWrap={'wrap'}>
-                    {appList.map((item) => {
-                        return (
-                            <div
-                                key={item.id}
-                                className='text-center w-[256px] h-[64px] shadow-[0_0_1px_1px_rgba(244,114,182,0.2)] bg-pink-100 rounded-lg px-2 py-2 mt-4'
-                            >
-                                <div className='text-pink-400'>{item.name}</div>
-                                <div className='text-blue-400'>{item.llm_name}</div>
-                            </div>
-                        )
-                    })}
-                </Flex>
+                </div>
             </div>
             {showCreateAppModal && (
                 <Modal isOpen={true} onClose={closeModal}>
                     <ModalOverlay />
                     <ModalContent>
-                        <ModalHeader>创建新的APP</ModalHeader>
+                        <ModalHeader>创建新的应用</ModalHeader>
                         <ModalCloseButton />
                         <ModalBody>
-                            <div>APP名称</div>
-                            <Input value={newAppName} onChange={(e) => {setNewAppName(e.target.value)}} placeholder={'请输入APP名称...'}/>
+                            <div>应用名称</div>
+                            <Input value={newAppName} onChange={(e) => {setNewAppName(e.target.value)}} placeholder={'请输入应用名称...'}/>
                             <div>请选择模型</div>
                             <Select
                                 onChange={(e) => {setSelectLLM(e.target.value)}}
-                                placeholder='Select llm'
                             >
                                 {llmList.map((item) => {
                                     return (

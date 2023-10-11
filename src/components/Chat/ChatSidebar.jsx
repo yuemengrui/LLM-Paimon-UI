@@ -10,14 +10,16 @@ import toast, {Toaster} from 'react-hot-toast';
 
 export default function ChatSidebar({ appName, chatList, selectChatId, setSelectChatId, newChat }) {
 
-    function deleteChat(chat_id) {
+    function deleteChat(e, chat_id) {
+        e.stopPropagation()
         toast('该功能正在实现中，请稍等...', {
             duration: 2000,
             position: 'top-center'
         })
     }
 
-    function topping(chat_id) {
+    function topping(e, chat_id) {
+        e.stopPropagation()
         toast('该功能正在实现中，请稍等...', {
             duration: 2000,
             position: 'top-center'
@@ -57,7 +59,7 @@ export default function ChatSidebar({ appName, chatList, selectChatId, setSelect
                                 <PiChatTeardropDotsThin className='ml-2'/>
                                 <span className='ml-2'>{item.name || '新对话'}</span>
                                 <div
-                                    onClick={() => {topping(item.id)}}
+                                    onClick={(e) => {topping(e, item.id)}}
                                     className='absolute right-2'
                                 >
                                     <MyTooltip label={item.isTopping? '取消置顶': '置顶'}>
@@ -66,7 +68,7 @@ export default function ChatSidebar({ appName, chatList, selectChatId, setSelect
                                     <Toaster/>
                                 </div>
                                 <div
-                                    onClick={() => {deleteChat(item.id)}}
+                                    onClick={(e) => {deleteChat(e, item.id)}}
                                     className='absolute -right-2 -top-2 text-sm hover:text-red-600'
                                 >
                                     <IoIosClose />
