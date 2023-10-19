@@ -21,7 +21,6 @@ export default function ChatInput({selectAppId, selectChatId, addMessage, update
             id: uuidv4(),
             role: "assistant",
             content: "正在思考中...",
-            usage: {},
             response: {},
             time_cost: "0s"
         }
@@ -60,9 +59,7 @@ export default function ChatInput({selectAppId, selectChatId, addMessage, update
                 id: responseMessage.id,
                 role: responseMessage.role,
                 content: res['answer'],
-                usage: res['usage'],
                 response: res,
-                time_cost: res['time_cost']
             })
         }
     }

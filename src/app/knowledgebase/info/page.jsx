@@ -13,7 +13,8 @@ import ImportData from "../../../components/KnowledgeBase/ImportData";
 
 export default function KnowledgeBaseInfo() {
     const searchParams = useSearchParams()
-    const app_id = searchParams.get('app_id')
+    const kb_id = searchParams.get('kb_id')
+    const kb_name = searchParams.get('kb_name')
 
     const tabList = [
         {
@@ -38,7 +39,7 @@ export default function KnowledgeBaseInfo() {
                         <div
                             className='text-3xl border rounded-lg border-gray-100 shadow-[2px_2px_2px_2px_rgba(0,0,0,0.2)]'>
                             <SiOpenai/></div>
-                        <div className='ml-4'>{app_id}</div>
+                        <div className='ml-2'>{kb_name}</div>
                     </Flex>
                     <Flex mt={8} direction={'column'} gap={2} alignItems={'center'}>
                         {tabList.map((item) => (
@@ -53,8 +54,8 @@ export default function KnowledgeBaseInfo() {
                     </Flex>
                 </div>
                 <div className='w-[1px] h-full bg-gray-200'/>
-                {/*<DatasetList/>*/}
-                <ImportData/>
+                {selectTab === '数据集' && (<DatasetList kb_id={kb_id} />)}
+                {selectTab === '导入数据' && (<ImportData kb_id={kb_id} />)}
             </div>
         </>
     )

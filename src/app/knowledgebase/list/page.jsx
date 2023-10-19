@@ -15,11 +15,11 @@ import {
     CheckboxGroup
 } from "@chakra-ui/react";
 import toast, {Toaster} from "react-hot-toast";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useRouter} from 'next/navigation';
-import {get_knowledge_base_list, kb_create} from "../../../api_servers/knowledge_base";
+import {RiDeleteBinLine} from "react-icons/ri";
+import {get_knowledge_base_list, kb_create, kb_delete} from "../../../api_servers/knowledge_base";
 import {get_embedding_model_list} from "../../../api_servers/embedding";
-
 
 
 export default function KnowledgeBase() {
@@ -39,17 +39,18 @@ export default function KnowledgeBase() {
         }
     }
 
-    useEffect( () => {
+    useEffect(() => {
         getKBList()
     }, []);
 
-    useEffect( () => {
+    useEffect(() => {
         async function getEmbModelList() {
             const res = await get_embedding_model_list()
             if (res && res.length) {
                 setEmbModelList(res)
             }
         }
+
         getEmbModelList()
     }, [showCreateKBModal]);
 
@@ -65,8 +66,7 @@ export default function KnowledgeBase() {
                 duration: 2000,
                 position: 'top-center'
             })
-        }
-        else {
+        } else {
             await kb_create(newKBName, selectEmbModelList)
             setNewKBName('')
             setShowCreateKBModal(false)
@@ -80,15 +80,22 @@ export default function KnowledgeBase() {
                 duration: 2000,
                 position: 'top-center'
             })
-        }
-        else {
+        } else {
             setShowCreateKBModal(true)
         }
     }
 
+    async function deleteKB(e, kb_id) {
+        e.stopPropagation()
+        await kb_delete(kb_id)
+        getKBList()
+    }
+
     return (
         <>
-            <div className='flex-1 w-full bg-blue-50/30 border border-gray-200 bg-white rounded-3xl mt-4 mr-4 ml-4 mb-4'>
+            <div
+                className='flex-1 w-full bg-blue-50/30 border border-gray-200 bg-white rounded-3xl mt-4 mr-4 ml-4 mb-4'>
+                <div className='py-2 ml-6 mt-2 text-2xl font-semibold text-blue-600'>我的知识库</div>
                 <Grid
                     p={5}
                     gridTemplateColumns={['1fr', 'repeat(3,1fr)', 'repeat(4,1fr)', 'repeat(5,1fr)']}
@@ -103,14 +110,20 @@ export default function KnowledgeBase() {
                             h={'140px'}
                             bgColor={'pink.100'}
                             position={'relative'}
-                            onClick={() => router.push(`/knowledgebase/info?app_id=${item.id}`)}
+                            onClick={() => router.push(`/knowledgebase/info?kb_id=${item.id}&kb_name=${item.name}`)}
+                            _hover={{
+                                boxShadow: '1px 1px 10px rgba(0,0,0,0.6)',
+                                borderColor: 'transparent'
+                            }}
                         >
-                            <div className='text-center text-blue-500'>{item.name}</div>
-                            <div className='mt-6 text-center'>
+                            <div className='text-center text-blue-500 text-2xl'>{item.name}</div>
+                            <ul className='mt-2 text-center text-sm'>
                                 {item.embedding_model_list.map((emb_model) => (
-                                    <div key={emb_model}>{emb_model}</div>
+                                    <li key={emb_model}>{emb_model}</li>
                                 ))}
-                            </div>
+                            </ul>
+                            <RiDeleteBinLine className='absolute right-3 hover:text-red-600'
+                                             onClick={(e) => deleteKB(e, item.id)}/>
                         </Card>
                     ))}
                 </Grid>
@@ -128,16 +141,20 @@ export default function KnowledgeBase() {
             </div>
             {showCreateKBModal && (
                 <Modal isOpen={true} onClose={closeModal}>
-                    <ModalOverlay />
+                    <ModalOverlay/>
                     <ModalContent>
                         <ModalHeader>创建新的知识库</ModalHeader>
-                        <ModalCloseButton />
+                        <ModalCloseButton/>
                         <ModalBody>
                             <div>知识库名称</div>
-                            <Input value={newKBName} onChange={(e) => {setNewKBName(e.target.value)}} placeholder={'请输入知识库名称...'}/>
-                            <div>请选择Embedding模型, 可多选</div>
+                            <Input value={newKBName} onChange={(e) => {
+                                setNewKBName(e.target.value)
+                            }} placeholder={'请输入知识库名称...'}/>
+                            <div>请选择Embedding模型, 可多选, 最多选5个</div>
                             <CheckboxGroup
-                                onChange={(e) => {setSelectEmbModelList(e)}}
+                                onChange={(e) => {
+                                    setSelectEmbModelList(e)
+                                }}
                                 colorScheme='green'
                             >
                                 <Stack spacing={[1, 5]} direction={['row', 'column']}>

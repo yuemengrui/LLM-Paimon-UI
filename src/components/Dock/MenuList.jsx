@@ -1,12 +1,19 @@
 import { PiChatCircleDotsBold } from "react-icons/pi";
 import { PiDatabaseBold } from "react-icons/pi";
 import { PiSquaresFourBold } from "react-icons/pi";
+import { BiHomeHeart } from "react-icons/bi";
 import {Flex} from "@chakra-ui/react";
 import {useRouter, usePathname} from "next/navigation";
 export default function MenuList() {
     const router = useRouter()
     const pathname = usePathname()
     const MenuList = [
+        {
+            'root_path': 'home',
+            'pathname': '/home',
+            'icon': <BiHomeHeart className='text-2xl' />,
+            'name': '首页'
+        },
         {
             'root_path': 'chat',
             'pathname': '/chat',

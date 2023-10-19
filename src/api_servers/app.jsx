@@ -23,7 +23,7 @@ export async function get_app_list() {
 }
 
 
-export async function create_app(name, llm_name) {
+export async function app_create(name, llm_name, kb_id) {
     const args = {
         method: "POST",
         headers: {
@@ -32,7 +32,8 @@ export async function create_app(name, llm_name) {
         },
         body: JSON.stringify({
             "name": name,
-            "llm_name": llm_name
+            "llm_name": llm_name,
+            "kb_id": kb_id
         })
     }
 
@@ -40,6 +41,24 @@ export async function create_app(name, llm_name) {
 
     console.log('response', response)
 }
+
+export async function app_delete(app_id) {
+    const args = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('Authorization')
+        },
+        body: JSON.stringify({
+            "app_id": app_id,
+        })
+    }
+
+    const response = await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_APP_DELETE, args)
+
+    console.log('response', response)
+}
+
 
 
 

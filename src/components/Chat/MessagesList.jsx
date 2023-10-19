@@ -10,8 +10,6 @@ import {BsArrowRepeat} from "react-icons/bs";
 import {LuPenLine} from "react-icons/lu";
 import {CiStar} from "react-icons/ci";
 import ChatButton from "@/components/ChatButton/ChatButton";
-import {Message} from '@/types/chat'
-import {chat} from "@/api_servers/chat";
 import {v4 as uuidv4} from "uuid";
 import toast, {Toaster} from 'react-hot-toast';
 import {
@@ -26,12 +24,15 @@ import {
 import JsonView from 'react18-json-view'
 import 'react18-json-view/src/style.css'
 
-// @ts-ignore
-export default function MessageList({messageList, addMessage, delMessage}) {
+
+export default function MessageList({selectAppId, selectChatId,messageList, addMessage, delMessage, updateMessage}) {
     const [showFullResponseModal, setShowFullResponseModal] = useState(false)
     const [fullResponse, setFullResponse] = useState({})
     const [showAnswerLabelModal, setShowAnswerLabelModal] = useState(false)
     const listRef = useRef(null)
+    const [showRetriever, setShowRetriever] = useState(false)
+    const [retrieverData, setRetrieverData] = useState('')
+    const [sourcesLen, setSourcesLen] = useState(0)
 
     useEffect(() => {
         // 每当数据更新时，滚动到最新的数据
@@ -41,36 +42,75 @@ export default function MessageList({messageList, addMessage, delMessage}) {
         }
     }, [messageList])
 
-    async function Regenerate(prompt: any) {
+    async function Regenerate(message_id, prompt) {
         delMessage()
 
-        const llm_answer = await chat(prompt)
-
-        const responseMessage: Message = {
+        const responseMessage = {
             id: uuidv4(),
             role: "assistant",
-            content: llm_answer['answer'],
-            usage: llm_answer['usage'],
-            response: llm_answer
+            content: "正在思考中...",
+            response: {}
         }
         addMessage(responseMessage)
+
+
+        const response = await fetch(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_LLM_CHAT, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": localStorage.getItem("Authorization")
+            },
+            body: JSON.stringify({
+                "app_id": selectAppId,
+                "chat_id": selectChatId,
+                "uid": message_id,
+                "answer_uid": responseMessage.id,
+                "prompt": prompt,
+                "model_name": undefined
+            })
+        })
+
+        const decoder = new TextDecoder("utf-8")
+
+        const reader = response.body.getReader()
+
+        while (true) {
+            const {done, value} = await reader.read();
+            if (done) {
+                break;
+            }
+            // 解码内容
+            const res = JSON.parse(decoder.decode(value))
+
+            updateMessage({
+                id: responseMessage.id,
+                role: responseMessage.role,
+                content: res['answer'],
+                response: res,
+            })
+        }
     }
 
-    async function copyTextToClipboard(text: string) {
+    async function copyTextToClipboard(text) {
         if ('clipboard' in navigator) {
             await navigator.clipboard.writeText(text);
         } else {
             document.execCommand('copy', true, text);
         }
         toast.success('复制成功', {
-            duration: 1000,
+            duration: 2000,
             position: 'top-center'
         })
     }
 
-    function showFullResponse(data: object) {
+    function showFullResponse(data) {
         setFullResponse(data)
         setShowFullResponseModal(true)
+    }
+
+    function showRetrieverData(data) {
+        setRetrieverData(data)
+        setShowRetriever(true)
     }
 
     function showAnswerLabel() {
@@ -81,7 +121,7 @@ export default function MessageList({messageList, addMessage, delMessage}) {
         <>
             <div className='w-full max-w-4xl mx-auto'>
                 <ul ref={listRef} style={{maxHeight: 'calc(100vh - 200px)'}} className='overflow-auto'>
-                    {messageList.map((message: any) => {
+                    {messageList.map((message) => {
                         const isAssistant = message.role === "assistant"
                         return (
                             <li
@@ -103,7 +143,7 @@ export default function MessageList({messageList, addMessage, delMessage}) {
                                                     </ChatButton>
                                                 </MyTooltip>
                                                 <MyTooltip label='重新生成'>
-                                                    <ChatButton onClick={() => Regenerate(message.content)}>
+                                                    <ChatButton onClick={() => Regenerate(message.id, message.content)}>
                                                         <BsArrowRepeat/>
                                                     </ChatButton>
                                                 </MyTooltip>
@@ -118,7 +158,7 @@ export default function MessageList({messageList, addMessage, delMessage}) {
                                             </Flex>
                                         </div>
                                         <div
-                                            className='bg-blue-100 rounded-lg shadow-[0_2px_2px_2px_rgba(96,165,250,0.3)] text-base mt-3 text-right px-2 py-2 max-w-fit ml-auto'>
+                                            className='bg-blue-100 rounded-lg shadow-[0_2px_2px_2px_rgba(96,165,250,0.3)] text-sm mt-3 text-right px-2 py-2 max-w-fit ml-auto'>
                                             <Markdown>{message.content}</Markdown>
                                         </div>
                                     </div>
@@ -126,7 +166,8 @@ export default function MessageList({messageList, addMessage, delMessage}) {
                                 {message.role == 'assistant' && (
                                     <div>
                                         <div>
-                                            <Flex gap={3} w={'100%'} alignItems={'center'} justifyContent={'flex-start'}>
+                                            <Flex gap={3} w={'100%'} alignItems={'center'}
+                                                  justifyContent={'flex-start'}>
                                                 <div
                                                     className='text-3xl bg-white border rounded-lg border-gray-100 shadow-[0_0_1px_1px_rgba(0,0,0,0.2)]'>
                                                     <SiOpenai/></div>
@@ -154,20 +195,34 @@ export default function MessageList({messageList, addMessage, delMessage}) {
                                             </Flex>
                                         </div>
                                         <div
-                                            className='bg-pink-100 rounded-lg shadow-[0_2px_2px_2px_rgba(244,114,182,0.3)] text-base mt-3 px-2 py-2'>
+                                            className='bg-pink-100 rounded-lg shadow-[0_2px_2px_2px_rgba(244,114,182,0.3)] text-sm mt-3 px-2 py-2'>
                                             <Markdown>{message.content}</Markdown>
                                             <Flex alignItems='center' mt='4' flexWrap='wrap' gap='2'>
                                                 <MyTooltip label='本次回答所关联的上下文对数'>
-                                                    <Tag text={`${message.response.history ? message.response.history.length : 0}对上下文`}/>
+                                                    <Tag
+                                                        text={`${message.response.history ? message.response.history.length : 0}对上下文`}/>
+                                                </MyTooltip>
+                                                <MyTooltip label='知识库中的引用'>
+                                                    <Tag text={`${message.response.retrieval ? message.response.retrieval.sources_len : 0}条引用`}
+                                                         onClick={() => showRetrieverData(message.response.retrieval.sources)}/>
                                                 </MyTooltip>
                                                 <MyTooltip label='本次请求总共使用的token数量'>
-                                                    <Tag text={message.usage.total_tokens + ' tokens'}/>
+                                                    <Tag
+                                                        text={`${message.response.usage ? message.response.usage.total_tokens : 0} tokens`}/>
                                                 </MyTooltip>
                                                 <MyTooltip label='本次请求所用时间'>
-                                                    <Tag text={message.time_cost}/>
+                                                    <Tag
+                                                        text={`${message.response.time_cost ? message.response.time_cost.total : '0s'}`}/>
                                                 </MyTooltip>
+                                                {message.response.retrieval && message.response.retrieval.MultiQueryRetriever && (
+                                                    <MyTooltip label='MultiQueryRetriever'>
+                                                        <Tag text='MultiQueryRetriever'
+                                                             onClick={() => showRetrieverData(message.response.retrieval.MultiQueryRetriever)}/>
+                                                    </MyTooltip>
+                                                )}
                                                 <MyTooltip label='点击查看完整响应'>
-                                                    <Tag text='完整响应' onClick={() => showFullResponse(message.response)}/>
+                                                    <Tag text='完整响应'
+                                                         onClick={() => showFullResponse(message.response)}/>
                                                 </MyTooltip>
                                             </Flex>
                                         </div>
@@ -180,32 +235,52 @@ export default function MessageList({messageList, addMessage, delMessage}) {
             </div>
             {showFullResponseModal && (
                 <Modal isOpen={true} onClose={() => setShowFullResponseModal(false)}>
-                    <ModalOverlay />
+                    <ModalOverlay/>
                     <ModalContent>
                         <ModalHeader>完整响应</ModalHeader>
-                        <ModalCloseButton />
+                        <ModalCloseButton/>
                         <ModalBody>
                             <div className='border bg-orange-50 px-2 py-3'>
-                                <JsonView src={fullResponse} theme={'atom'} />
+                                <JsonView src={fullResponse} theme={'atom'}/>
                             </div>
                         </ModalBody>
                         <ModalFooter>
-                            <Button border='1px' borderColor='gray.200' onClick={() => setShowFullResponseModal(false)}>关闭</Button>
+                            <Button border='1px' borderColor='gray.200'
+                                    onClick={() => setShowFullResponseModal(false)}>关闭</Button>
                         </ModalFooter>
                     </ModalContent>
                 </Modal>
             )}
             {showAnswerLabelModal && (
                 <Modal isOpen={true} onClose={() => setShowAnswerLabelModal(false)}>
-                    <ModalOverlay />
+                    <ModalOverlay/>
                     <ModalContent>
                         <ModalHeader>请输入期望的答案</ModalHeader>
-                        <ModalCloseButton />
+                        <ModalCloseButton/>
                         <ModalBody>
-                            <textarea className='h-64 border bg-orange-50 w-full' placeholder={'请输入期望的回答...'}/>
+                            <textarea className='h-64 border bg-orange-50 w-full' placeholder='请输入期望的答案......'/>
                         </ModalBody>
                         <ModalFooter>
-                            <Button border='1px' borderColor='gray.200' onClick={() => setShowAnswerLabelModal(false)}>确认</Button>
+                            <Button border='1px' borderColor='gray.200'
+                                    onClick={() => setShowAnswerLabelModal(false)}>确认</Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+            )}
+            {showRetriever && (
+                <Modal isOpen={true} onClose={() => setShowRetriever(false)}>
+                    <ModalOverlay/>
+                    <ModalContent>
+                        <ModalHeader>详细数据</ModalHeader>
+                        <ModalCloseButton/>
+                        <ModalBody>
+                            <div className='border bg-orange-50 px-2 py-3'>
+                                <JsonView src={retrieverData} theme={'atom'}/>
+                            </div>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button border='1px' borderColor='gray.200'
+                                    onClick={() => setShowRetriever(false)}>确认</Button>
                         </ModalFooter>
                     </ModalContent>
                 </Modal>

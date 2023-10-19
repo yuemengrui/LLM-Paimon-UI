@@ -5,7 +5,7 @@ import {useEffect} from "react";
 import {useRouter} from 'next/navigation';
 import {auth_token_verify} from "@/api_servers/auth";
 
-export default function Home() {
+export default function Paimon() {
     const router = useRouter()
 
     useEffect(  () => {
@@ -15,7 +15,7 @@ export default function Home() {
 
             console.log('token_res', res)
             if (res) {
-                router.push('/appstore')
+                router.push('/home')
             }
             else {
                 router.push('/auth')

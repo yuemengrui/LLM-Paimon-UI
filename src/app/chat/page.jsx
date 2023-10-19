@@ -103,7 +103,7 @@ export default function Chat() {
                                             </Flex>
                                         </div>
                                         <div className='h-[1px] w-full bg-gray-200'/>
-                                        {messageList.length ? (<MessageList messageList={messageList} addMessage={addMessage} delMessage={delMessage}/>) : (<Welcome/>)}
+                                        {messageList.length ? (<MessageList selectAppId={selectAppId} selectChatId={selectChatId} messageList={messageList} addMessage={addMessage} delMessage={delMessage} updateMessage={updateMessage}/>) : (<Welcome/>)}
                                         <ChatInput selectAppId={selectAppId} selectChatId={selectChatId} addMessage={addMessage} updateMessage={updateMessage}/>
                                     </div>
                                 </>

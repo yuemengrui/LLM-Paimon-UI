@@ -26,6 +26,13 @@ export default function ChatSidebar({ appName, chatList, selectChatId, setSelect
         })
     }
 
+    function deleteAllChat(chat_id) {
+        toast('该功能正在实现中，请稍等...', {
+            duration: 2000,
+            position: 'top-center'
+        })
+    }
+
 
     return (
         <div className='w-[320px] rounded-l-3xl px-6 py-6'>
@@ -42,10 +49,15 @@ export default function ChatSidebar({ appName, chatList, selectChatId, setSelect
                         <PiChatTeardropDotsThin className='ml-6'/><span className='ml-2'>新对话</span>
                     </Flex>
                 </button>
-                <button
-                    className='ml-4 bg-white border rounded-lg border-gray-100 shadow-[0_0_2px_2px_rgba(0,0,0,0.1)] px-2 py-2 hover:text-pink-400 hover:bg-pink-100'>
-                    <PiBroom/>
-                </button>
+                <MyTooltip label='删除所有对话'>
+                    <button
+                        className='ml-4 bg-white border rounded-lg border-gray-100 shadow-[0_0_2px_2px_rgba(0,0,0,0.1)] px-2 py-2 hover:text-pink-400 hover:bg-pink-100'
+                        onClick={deleteAllChat}
+                    >
+                        <PiBroom/>
+                        <Toaster/>
+                    </button>
+                </MyTooltip>
             </Flex>
             <Flex alignItems={'center'} mt={6} direction={"column"}>
                 {chatList.map((item) => {
