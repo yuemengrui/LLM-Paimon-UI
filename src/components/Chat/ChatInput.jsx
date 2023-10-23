@@ -52,14 +52,19 @@ export default function ChatInput({selectAppId, currentModel, selectChatId, addM
                 break;
             }
             // 解码内容
-            const res = JSON.parse(decoder.decode(value))
+            try {
+                const content  = decoder.decode(value)
+                const res = JSON.parse(content)
+                updateMessage({
+                    id: responseMessage.id,
+                    role: responseMessage.role,
+                    content: res['answer'],
+                    response: res,
+                })
+            } catch (e) {
+                console.log(content, e)
+            }
 
-            updateMessage({
-                id: responseMessage.id,
-                role: responseMessage.role,
-                content: res['answer'],
-                response: res,
-            })
         }
     }
 
