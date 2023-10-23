@@ -62,7 +62,7 @@ export default function ChatInput({selectAppId, currentModel, selectChatId, addM
                     response: res,
                 })
             } catch (e) {
-                console.log(content, e)
+                console.log(e)
             }
 
         }
