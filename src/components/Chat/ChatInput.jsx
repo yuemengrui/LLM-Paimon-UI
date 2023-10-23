@@ -5,7 +5,7 @@ import TextareaAutoSize from "react-textarea-autosize"
 import {useState} from "react"
 import {v4 as uuidv4} from "uuid"
 
-export default function ChatInput({selectAppId, selectChatId, addMessage, updateMessage}) {
+export default function ChatInput({selectAppId, currentModel, selectChatId, addMessage, updateMessage}) {
     const [messageText, setMessageText] = useState("")
 
     async function send() {
@@ -22,7 +22,6 @@ export default function ChatInput({selectAppId, selectChatId, addMessage, update
             role: "assistant",
             content: "正在思考中...",
             response: {},
-            time_cost: "0s"
         }
         addMessage(responseMessage)
 
@@ -39,7 +38,7 @@ export default function ChatInput({selectAppId, selectChatId, addMessage, update
                 "uid": message.id,
                 "answer_uid": responseMessage.id,
                 "prompt": messageText,
-                "model_name": undefined
+                "model_name": currentModel
             })
         })
 

@@ -1,3 +1,4 @@
+'use client'
 import Markdown from "@/components/common/Markdown"
 import {SiOpenai} from "react-icons/si"
 import {useEffect, useRef, useState} from "react";
@@ -25,14 +26,13 @@ import JsonView from 'react18-json-view'
 import 'react18-json-view/src/style.css'
 
 
-export default function MessageList({selectAppId, selectChatId,messageList, addMessage, delMessage, updateMessage}) {
+export default function MessageList({selectAppId, currentModel, selectChatId,messageList, addMessage, delMessage, updateMessage}) {
     const [showFullResponseModal, setShowFullResponseModal] = useState(false)
     const [fullResponse, setFullResponse] = useState({})
     const [showAnswerLabelModal, setShowAnswerLabelModal] = useState(false)
     const listRef = useRef(null)
     const [showRetriever, setShowRetriever] = useState(false)
     const [retrieverData, setRetrieverData] = useState('')
-    const [sourcesLen, setSourcesLen] = useState(0)
 
     useEffect(() => {
         // 每当数据更新时，滚动到最新的数据
@@ -66,7 +66,7 @@ export default function MessageList({selectAppId, selectChatId,messageList, addM
                 "uid": message_id,
                 "answer_uid": responseMessage.id,
                 "prompt": prompt,
-                "model_name": undefined
+                "model_name": currentModel
             })
         })
 
@@ -163,7 +163,7 @@ export default function MessageList({selectAppId, selectChatId,messageList, addM
                                         </div>
                                     </div>
                                 )}
-                                {message.role == 'assistant' && (
+                                {message.role === 'assistant' && (
                                     <div>
                                         <div>
                                             <Flex gap={3} w={'100%'} alignItems={'center'}

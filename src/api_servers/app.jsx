@@ -23,7 +23,7 @@ export async function get_app_list() {
 }
 
 
-export async function app_create(name, llm_name, kb_id) {
+export async function app_create(name, llm_name, kb_id=null) {
     const args = {
         method: "POST",
         headers: {

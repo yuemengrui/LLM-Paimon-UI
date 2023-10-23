@@ -17,19 +17,21 @@ export default function Chat() {
     const [selectAppId, setSelectAppId] = useState(null)
     const [chatList, setChatList] = useState([])
     const [selectChatId, setSelectChatId] = useState(null)
+    const [currentModel, setCurrentModel] = useState(undefined)
 
     async function getAppList() {
         const res = await get_app_list()
-        if (res && res.length) {
+        if (res && res.length > 0) {
             setAppList(res)
             setSelectAppId(res[0].id)
+            setCurrentModel(res[0].llm_name)
         }
     }
 
     async function getAppChatList(app_id){
         if (app_id) {
             const res = await get_app_chat_list(app_id)
-            if (res && res.length) {
+            if (res && res.length > 0) {
                 setChatList(res)
                 setSelectChatId(res[0].id)
             }
@@ -65,7 +67,7 @@ export default function Chat() {
         await create_app_chat(selectAppId)
         const chat_list_res = await get_app_chat_list(selectAppId)
 
-        if (chat_list_res.length) {
+        if (chat_list_res.length > 0) {
             setChatList(chat_list_res)
             setSelectChatId(chat_list_res[0].id)
         }
@@ -87,7 +89,7 @@ export default function Chat() {
             <div className='flex w-full bg-blue-50/30'>
                 {appList.length && (
                     <>
-                        <AppList appList={appList} selectAppId={selectAppId} setSelectAppId={setSelectAppId} />
+                        <AppList appList={appList} selectAppId={selectAppId} setSelectAppId={setSelectAppId} setCurrentModel={setCurrentModel} />
                         <div className='w-[1px] h-full bg-gray-200'/>
                         <div className='flex flex-1 border border-gray-200 bg-white rounded-3xl mt-4 mr-4 ml-4 mb-4'>
                             <ChatSidebar appName={appList.filter((item) => item.id === selectAppId)[0].name} chatList={chatList} selectChatId={selectChatId} setSelectChatId={setSelectChatId} newChat={newChat} />
@@ -103,8 +105,8 @@ export default function Chat() {
                                             </Flex>
                                         </div>
                                         <div className='h-[1px] w-full bg-gray-200'/>
-                                        {messageList.length ? (<MessageList selectAppId={selectAppId} selectChatId={selectChatId} messageList={messageList} addMessage={addMessage} delMessage={delMessage} updateMessage={updateMessage}/>) : (<Welcome/>)}
-                                        <ChatInput selectAppId={selectAppId} selectChatId={selectChatId} addMessage={addMessage} updateMessage={updateMessage}/>
+                                        {messageList.length ? (<MessageList selectAppId={selectAppId} currentModel={currentModel} selectChatId={selectChatId} messageList={messageList} addMessage={addMessage} delMessage={delMessage} updateMessage={updateMessage}/>) : (<Welcome/>)}
+                                        <ChatInput selectAppId={selectAppId} currentModel={currentModel} selectChatId={selectChatId} addMessage={addMessage} updateMessage={updateMessage}/>
                                     </div>
                                 </>
                             )}

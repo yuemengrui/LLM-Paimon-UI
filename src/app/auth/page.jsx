@@ -29,7 +29,7 @@ export default function Auth() {
 
         if (response && response.token) {
             localStorage.setItem("Authorization", response.token)
-            router.push('/chat')
+            router.push('/home')
         }
     }
 
