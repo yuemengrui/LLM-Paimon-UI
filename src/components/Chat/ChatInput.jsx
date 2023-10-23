@@ -53,8 +53,7 @@ export default function ChatInput({selectAppId, currentModel, selectChatId, addM
             }
             // 解码内容
             try {
-                const content  = decoder.decode(value)
-                const res = JSON.parse(content)
+                const res = JSON.parse(decoder.decode(value))
                 updateMessage({
                     id: responseMessage.id,
                     role: responseMessage.role,

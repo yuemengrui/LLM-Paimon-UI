@@ -79,15 +79,18 @@ export default function MessageList({selectAppId, currentModel, selectChatId,mes
             if (done) {
                 break;
             }
-            // 解码内容
-            const res = JSON.parse(decoder.decode(value))
 
-            updateMessage({
-                id: responseMessage.id,
-                role: responseMessage.role,
-                content: res['answer'],
-                response: res,
-            })
+            try {
+                const res = JSON.parse(decoder.decode(value))
+                updateMessage({
+                    id: responseMessage.id,
+                    role: responseMessage.role,
+                    content: res['answer'],
+                    response: res,
+                })
+            } catch (e) {
+                console.log(e)
+            }
         }
     }
 
