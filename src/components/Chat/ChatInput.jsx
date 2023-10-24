@@ -4,6 +4,7 @@ import {FiSend} from "react-icons/fi"
 import TextareaAutoSize from "react-textarea-autosize"
 import {useState} from "react"
 import {v4 as uuidv4} from "uuid"
+import {fetchEventSource} from '@microsoft/fetch-event-source';
 
 export default function ChatInput({selectAppId, currentModel, selectChatId, addMessage, updateMessage}) {
     const [messageText, setMessageText] = useState("")
@@ -25,8 +26,7 @@ export default function ChatInput({selectAppId, currentModel, selectChatId, addM
         }
         addMessage(responseMessage)
 
-
-        const response = await fetch(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_LLM_CHAT, {
+        await fetchEventSource(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_LLM_CHAT, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -39,32 +39,66 @@ export default function ChatInput({selectAppId, currentModel, selectChatId, addM
                 "answer_uid": responseMessage.id,
                 "prompt": messageText,
                 "model_name": currentModel
-            })
+            }),
+
+            onmessage(msg) {
+                // 解码内容
+                try {
+                    const res = JSON.parse(msg.data)
+                    updateMessage({
+                        id: responseMessage.id,
+                        role: responseMessage.role,
+                        content: res['answer'],
+                        response: res,
+                    })
+                } catch (e) {
+                    console.log(e)
+                }
+
+            }
         })
 
-        const decoder = new TextDecoder("utf-8")
 
-        const reader = response.body.getReader()
-
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) {
-                break;
-            }
-            // 解码内容
-            try {
-                const res = JSON.parse(decoder.decode(value))
-                updateMessage({
-                    id: responseMessage.id,
-                    role: responseMessage.role,
-                    content: res['answer'],
-                    response: res,
-                })
-            } catch (e) {
-                console.log(e)
-            }
-
-        }
+        // const response = await fetch(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_LLM_CHAT, {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //         "Authorization": localStorage.getItem("Authorization")
+        //     },
+        //     body: JSON.stringify({
+        //         "app_id": selectAppId,
+        //         "chat_id": selectChatId,
+        //         "uid": message.id,
+        //         "answer_uid": responseMessage.id,
+        //         "prompt": messageText,
+        //         "model_name": currentModel
+        //     })
+        // })
+        //
+        // const decoder = new TextDecoder("utf-8")
+        //
+        // const reader = response.body.getReader()
+        //
+        // while (true) {
+        //     const { done, value } = await reader.read();
+        //     if (done) {
+        //         break;
+        //     }
+        //     // 解码内容
+        //     try {
+        //         console.log(decoder.decode(value))
+        //         const res = JSON.parse(decoder.decode(value))
+        //         updateMessage({
+        //             id: responseMessage.id,
+        //             role: responseMessage.role,
+        //             content: res['answer'],
+        //             response: res,
+        //         })
+        //     } catch (e) {
+        //         console.log(e)
+        //     }
+        //
+        // }
     }
 
     function handleEnter(e) {
