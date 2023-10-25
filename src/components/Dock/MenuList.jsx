@@ -2,6 +2,8 @@ import { PiChatCircleDotsBold } from "react-icons/pi";
 import { PiDatabaseBold } from "react-icons/pi";
 import { PiSquaresFourBold } from "react-icons/pi";
 import { BiHomeHeart } from "react-icons/bi";
+import { BiSlideshow } from "react-icons/bi";
+import { MdSportsKabaddi } from "react-icons/md";
 import {Flex} from "@chakra-ui/react";
 import {useRouter, usePathname} from "next/navigation";
 export default function MenuList() {
@@ -13,6 +15,12 @@ export default function MenuList() {
             'pathname': '/home',
             'icon': <BiHomeHeart className='text-2xl' />,
             'name': '首页'
+        },
+        {
+            'root_path': 'show',
+            'pathname': '/show',
+            'icon': <BiSlideshow className='text-2xl' />,
+            'name': '秀'
         },
         {
             'root_path': 'chat',
@@ -31,6 +39,12 @@ export default function MenuList() {
             'pathname': '/knowledgebase/list',
             'icon': <PiDatabaseBold className='text-2xl' />,
             'name': '知识库'
+        },
+        {
+            'root_path': 'arena',
+            'pathname': '/arena',
+            'icon': <MdSportsKabaddi className='text-2xl' />,
+            'name': '竞技场'
         }
     ]
     return (

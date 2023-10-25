@@ -32,8 +32,8 @@ export default function KnowledgeBaseInfo() {
     // const [contentType, setContentType] = useState('')
 
     return (
-        <>
-            <div className='flex flex-1 w-full bg-blue-50/30 border border-gray-200 bg-white rounded-3xl mt-4 mr-4 ml-4 mb-4'>
+        <div className='flex w-full bg-blue-50/30'>
+            <div className='flex flex-1 border border-gray-200 bg-white rounded-3xl mt-4 mr-4 ml-4 mb-4'>
                 <div className='w-[156px] rounded-l-3xl'>
                     <Flex alignItems={'center'} mt={6} ml={4}>
                         <div
@@ -57,6 +57,6 @@ export default function KnowledgeBaseInfo() {
                 {selectTab === '数据集' && (<DatasetList kb_id={kb_id} />)}
                 {selectTab === '导入数据' && (<ImportData kb_id={kb_id} />)}
             </div>
-        </>
+        </div>
     )
 }

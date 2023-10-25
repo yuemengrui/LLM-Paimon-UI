@@ -7,8 +7,11 @@ import {
     Flex
 } from '@chakra-ui/react'
 import {useEffect, useState} from "react";
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import {auth} from "../../api_servers/auth";
+import {AiOutlineEyeInvisible} from "react-icons/ai";
+import {AiOutlineEye} from "react-icons/ai";
+import toast, {Toaster} from "react-hot-toast";
 
 export default function Auth() {
     const router = useRouter();
@@ -16,10 +19,13 @@ export default function Auth() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [isDisabled, setIsDisabled] = useState(true)
+    const [showPWD, setShowPWD] = useState(false)
 
     useEffect(() => {
-        if (username && password) {
+        if (username.length >= 6 && password.length >= 6) {
             setIsDisabled(false)
+        } else {
+            setIsDisabled(true)
         }
     }, [username, password]);
 
@@ -31,6 +37,21 @@ export default function Auth() {
             localStorage.setItem("Authorization", response.token)
             router.push('/home')
         }
+        else {
+            toast.error(response.errmsg || '登录失败', {
+                duration: 2000,
+                position: 'top-center'
+            })
+        }
+    }
+
+    function show_password(e) {
+        if (showPWD) {
+            setShowPWD(false)
+        }
+        else {
+            setShowPWD(true)
+        }
     }
 
     return (
@@ -40,11 +61,22 @@ export default function Auth() {
                     <Flex gap={3} align={"center"} direction={"column"}>
                         <FormControl>
                             <FormLabel>账号</FormLabel>
-                            <Input value={username} onChange={(e) => {setUsername(e.target.value)}} />
+                            <Input placeholder='账号需大于等于6个字符' value={username} onChange={(e) => {
+                                setUsername(e.target.value)
+                            }}/>
                         </FormControl>
                         <FormControl>
                             <FormLabel>密码</FormLabel>
-                            <Input value={password} onChange={(e) => {setPassword(e.target.value)}} />
+                            <Flex>
+                                <Input placeholder='密码需大于等于6个字符'
+                                       type={showPWD ? 'text' : 'password'}
+                                       value={password}
+                                       onChange={(e) => {setPassword(e.target.value)}}
+                                />
+                                <div className='absolute mt-3 right-2' onClick={(e) => show_password(e)}>
+                                    {showPWD ? <AiOutlineEye/> : <AiOutlineEyeInvisible/>}
+                                </div>
+                            </Flex>
                         </FormControl>
                         <button
                             disabled={isDisabled}
@@ -53,6 +85,7 @@ export default function Auth() {
                         >
                             登录
                         </button>
+                        <Toaster/>
                         <div className='mt-2 text-sm'>未注册账号登录时会自动创建新账号</div>
                     </Flex>
                 </div>

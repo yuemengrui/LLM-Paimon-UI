@@ -95,8 +95,8 @@ export default function AppStore() {
 
 
     return (
-        <>
-            <div className='flex-1 w-full bg-blue-50/30 border border-gray-200 bg-white rounded-3xl mt-4 mr-4 ml-4 mb-4'>
+        <div className='flex w-full bg-blue-50/30'>
+            <div className='flex-1 bg-white border border-gray-200 rounded-3xl mt-4 mr-4 ml-4 mb-4'>
                 <div className='py-2 ml-6 mt-2 text-2xl font-semibold text-blue-600'>我的应用</div>
                 <Grid
                     p={5}
@@ -176,6 +176,6 @@ export default function AppStore() {
                     </ModalContent>
                 </Modal>
             )}
-        </>
+        </div>
     )
 }
