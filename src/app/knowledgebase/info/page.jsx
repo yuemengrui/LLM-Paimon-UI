@@ -2,11 +2,6 @@
 import {useSearchParams} from 'next/navigation';
 import {Flex} from "@chakra-ui/react";
 import {SiOpenai} from "react-icons/si";
-import {PiBroom, PiChatTeardropDotsThin} from "react-icons/pi";
-import MyTooltip from "../../../components/Tooltip/Tooltip";
-import {LiaThumbtackSolid} from "react-icons/lia";
-import {Toaster} from "react-hot-toast";
-import {IoIosClose} from "react-icons/io";
 import {useState} from "react";
 import DatasetList from "../../../components/KnowledgeBase/DatasetList";
 import ImportData from "../../../components/KnowledgeBase/ImportData";

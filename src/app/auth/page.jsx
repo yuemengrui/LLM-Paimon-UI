@@ -45,7 +45,7 @@ export default function Auth() {
         }
     }
 
-    function show_password(e) {
+    function show_password() {
         if (showPWD) {
             setShowPWD(false)
         }
@@ -73,7 +73,7 @@ export default function Auth() {
                                        value={password}
                                        onChange={(e) => {setPassword(e.target.value)}}
                                 />
-                                <div className='absolute mt-3 right-2' onClick={(e) => show_password(e)}>
+                                <div className='absolute mt-3 right-2' onClick={show_password}>
                                     {showPWD ? <AiOutlineEye/> : <AiOutlineEyeInvisible/>}
                                 </div>
                             </Flex>
