@@ -24,6 +24,7 @@ import {
 } from '@chakra-ui/react'
 import JsonView from 'react18-json-view'
 import 'react18-json-view/src/style.css'
+import {fetchEventSource} from "@microsoft/fetch-event-source";
 
 
 export default function MessageList({selectAppId, currentModel, selectChatId,messageList, addMessage, delMessage, updateMessage}) {
@@ -53,8 +54,7 @@ export default function MessageList({selectAppId, currentModel, selectChatId,mes
         }
         addMessage(responseMessage)
 
-
-        const response = await fetch(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_LLM_CHAT, {
+        await fetchEventSource(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_LLM_CHAT, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -67,31 +67,24 @@ export default function MessageList({selectAppId, currentModel, selectChatId,mes
                 "answer_uid": responseMessage.id,
                 "prompt": prompt,
                 "model_name": currentModel
-            })
+            }),
+
+            onmessage(msg) {
+                // 解码内容
+                try {
+                    const res = JSON.parse(msg.data)
+                    updateMessage({
+                        id: responseMessage.id,
+                        role: responseMessage.role,
+                        content: res['answer'],
+                        response: res,
+                    })
+                } catch (e) {
+                    console.log(e)
+                }
+
+            }
         })
-
-        const decoder = new TextDecoder("utf-8")
-
-        const reader = response.body.getReader()
-
-        while (true) {
-            const {done, value} = await reader.read();
-            if (done) {
-                break;
-            }
-
-            try {
-                const res = JSON.parse(decoder.decode(value))
-                updateMessage({
-                    id: responseMessage.id,
-                    role: responseMessage.role,
-                    content: res['answer'],
-                    response: res,
-                })
-            } catch (e) {
-                console.log(e)
-            }
-        }
     }
 
     async function copyTextToClipboard(text) {

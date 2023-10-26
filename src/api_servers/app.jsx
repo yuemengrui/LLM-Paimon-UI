@@ -23,6 +23,45 @@ export async function get_app_list() {
 }
 
 
+export async function get_app_create_system_app_list() {
+    const args = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('Authorization')
+        }
+    }
+
+    const response = await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_APP_CREATE_SYSTEM_APP_LIST, args)
+
+    console.log('response', response)
+
+    if (response) {
+        return response['list']
+    }
+    else {
+        return []
+    }
+}
+
+export async function app_create_system_app(system_app_id) {
+    const args = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('Authorization')
+        },
+        body: JSON.stringify({
+            "system_app_id": system_app_id
+        })
+    }
+
+    const response = await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_APP_CREATE_SYSTEM_APP, args)
+
+    console.log('response', response)
+}
+
+
 export async function app_create(name, llm_name, kb_id=null) {
     const args = {
         method: "POST",

@@ -1,6 +1,6 @@
 'use client'
 import {useEffect, useState} from "react";
-import {get_app_list, app_create, app_delete} from "../../api_servers/app";
+import {get_app_list, get_app_create_system_app_list, app_create, app_delete, app_create_system_app} from "../../api_servers/app";
 import {get_llm_list} from "../../api_servers/chat";
 import {get_knowledge_base_list} from "../../api_servers/knowledge_base";
 import {
@@ -13,18 +13,23 @@ import {
     ModalContent,
     ModalFooter,
     ModalHeader,
-    ModalOverlay
+    ModalOverlay, Flex
 } from "@chakra-ui/react";
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { Input, Select } from '@chakra-ui/react'
 import toast, {Toaster} from 'react-hot-toast';
 import {RiDeleteBinLine} from "react-icons/ri";
+
 
 export default function AppStore() {
 
     const [appList, setAppList] = useState([])
     const [llmList, setLlmList] = useState([])
     const [KBList, setKBList] = useState([])
+    const [systemAppList, setSystemAppList] = useState([])
     const [showCreateAppModal, setShowCreateAppModal] = useState(false)
+    const [appType, setAppType] = useState(0)
+    const [selectSystemApp, setSelectSystemApp] = useState(1)
     const [newAppName, setNewAppName] = useState('')
     const [selectLLM, setSelectLLM] = useState(null)
     const [selectKB, setSelectKB] = useState(null)
@@ -41,6 +46,11 @@ export default function AppStore() {
 
     useEffect( () => {
         async function getList() {
+            const system_app_res = await get_app_create_system_app_list()
+            if (system_app_res && system_app_res.length > 0) {
+                setSystemAppList(system_app_res)
+            }
+
             const llm_res = await get_llm_list()
             if (llm_res && llm_res.length > 0) {
                 setLlmList(llm_res)
@@ -56,21 +66,32 @@ export default function AppStore() {
 
     function closeModal() {
         setShowCreateAppModal(false)
+        setAppType(0)
+        setSelectSystemApp(null)
         setNewAppName('')
-        setSelectLLM('')
+        setSelectLLM(null)
+        setSelectLLM(null)
     }
 
     async function createApp() {
-        if (newAppName && selectLLM) {
-            await app_create(newAppName, selectLLM, selectKB)
-            setShowCreateAppModal(false)
+        console.log('111: ',selectSystemApp, appType)
+        if (appType === 0) {
+            await app_create_system_app(selectSystemApp)
+            closeModal()
             getAppList()
         }
         else {
-            toast.error("请填写应用名称和选择模型", {
-                duration: 2000,
-                position: 'top-center'
-            })
+            if (newAppName && selectLLM) {
+                await app_create(newAppName, selectLLM, selectKB)
+                closeModal()
+                getAppList()
+            }
+            else {
+                toast.error("请填写应用名称和选择模型", {
+                    duration: 2000,
+                    position: 'top-center'
+                })
+            }
         }
     }
 
@@ -143,30 +164,59 @@ export default function AppStore() {
                         <ModalHeader>创建新的应用</ModalHeader>
                         <ModalCloseButton />
                         <ModalBody>
-                            <div>应用名称</div>
-                            <Input value={newAppName} onChange={(e) => {setNewAppName(e.target.value)}} placeholder={'请输入应用名称...'}/>
-                            <div>请选择模型</div>
-                            <Select
-                                onChange={(e) => {setSelectLLM(e.target.value)}}
-                                placeholder='请选择模型'
+                            <Tabs
+                                variant='soft-rounded'
+                                colorScheme='green'
+                                onChange={(index) => setAppType(index)}
                             >
-                                {llmList.map((item) => {
-                                    return (
-                                        <option key={item}>{item}</option>
-                                    )
-                                })}
-                            </Select>
-                            <div>请选择知识库，可不选</div>
-                            <Select
-                                onChange={(e) => {setSelectKB(e.target.value)}}
-                                placeholder='请选择知识库'
-                            >
-                                {KBList.map((item) => {
-                                    return (
-                                        <option key={item.id} value={item.id}>{item.name}</option>
-                                    )
-                                })}
-                            </Select>
+                                <TabList>
+                                    <Tab>系统应用</Tab>
+                                    <Tab>自定义应用</Tab>
+                                </TabList>
+                                <TabPanels>
+                                    <TabPanel>
+                                        <Flex alignItems={'center'} mt={6} direction={"column"}>
+                                            {systemAppList.map((sys_app) => {
+                                                return (
+                                                    <button
+                                                        key={sys_app.id}
+                                                        className={`${selectSystemApp === sys_app.id ? 'shadow-[0_0_2px_2px_rgba(244,114,182,0.2)] bg-pink-100 text-pink-400' : 'bg-blue-50/75 hover:bg-blue-100 hover:text-pink-300'} w-full rounded-lg px-2 py-2 mt-4`}
+                                                        onClick={() => setSelectSystemApp(sys_app.id)}
+                                                    >
+                                                        {sys_app.name}
+                                                    </button>
+                                                )
+                                            })}
+                                        </Flex>
+                                    </TabPanel>
+                                    <TabPanel>
+                                        <div>应用名称</div>
+                                        <Input value={newAppName} onChange={(e) => {setNewAppName(e.target.value)}} placeholder={'请输入应用名称...'}/>
+                                        <div>请选择模型</div>
+                                        <Select
+                                            onChange={(e) => {setSelectLLM(e.target.value)}}
+                                            placeholder='请选择模型'
+                                        >
+                                            {llmList.map((item) => {
+                                                return (
+                                                    <option key={item}>{item}</option>
+                                                )
+                                            })}
+                                        </Select>
+                                        <div>请选择知识库，可不选</div>
+                                        <Select
+                                            onChange={(e) => {setSelectKB(e.target.value)}}
+                                            placeholder='请选择知识库'
+                                        >
+                                            {KBList.map((item) => {
+                                                return (
+                                                    <option key={item.id} value={item.id}>{item.name}</option>
+                                                )
+                                            })}
+                                        </Select>
+                                    </TabPanel>
+                                </TabPanels>
+                            </Tabs>
                         </ModalBody>
                         <ModalFooter>
                             <Button border='1px' borderColor='gray.200' onClick={createApp}>确认</Button>
