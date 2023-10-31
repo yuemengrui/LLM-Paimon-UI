@@ -25,9 +25,10 @@ import {
 import JsonView from 'react18-json-view'
 import 'react18-json-view/src/style.css'
 import {fetchEventSource} from "@microsoft/fetch-event-source";
+import Image from "next/image";
 
 
-export default function MessageList({selectAppId, currentModel, selectChatId,messageList, addMessage, delMessage, updateMessage}) {
+export default function MessageList({selectApp, currentModel, selectChatId,messageList, addMessage, delMessage, updateMessage}) {
     const [showFullResponseModal, setShowFullResponseModal] = useState(false)
     const [fullResponse, setFullResponse] = useState({})
     const [showAnswerLabelModal, setShowAnswerLabelModal] = useState(false)
@@ -49,6 +50,7 @@ export default function MessageList({selectAppId, currentModel, selectChatId,mes
         const responseMessage = {
             id: uuidv4(),
             role: "assistant",
+            type: 'text',
             content: "正在思考中...",
             response: {}
         }
@@ -61,7 +63,7 @@ export default function MessageList({selectAppId, currentModel, selectChatId,mes
                 "Authorization": localStorage.getItem("Authorization")
             },
             body: JSON.stringify({
-                "app_id": selectAppId,
+                "app_id": selectApp.id,
                 "chat_id": selectChatId,
                 "uid": message_id,
                 "answer_uid": responseMessage.id,
@@ -76,6 +78,7 @@ export default function MessageList({selectAppId, currentModel, selectChatId,mes
                     updateMessage({
                         id: responseMessage.id,
                         role: responseMessage.role,
+                        type: 'text',
                         content: res['answer'],
                         response: res,
                     })
@@ -132,17 +135,21 @@ export default function MessageList({selectAppId, currentModel, selectChatId,mes
                                     <div>
                                         <div>
                                             <Flex gap={3} w={'100%'} alignItems={'center'} justifyContent={'flex-end'}>
-                                                <MyTooltip label='复制'>
-                                                    <ChatButton onClick={() => copyTextToClipboard(message.content)}>
-                                                        <GoCopy/>
-                                                        <Toaster/>
-                                                    </ChatButton>
-                                                </MyTooltip>
-                                                <MyTooltip label='重新生成'>
-                                                    <ChatButton onClick={() => Regenerate(message.id, message.content)}>
-                                                        <BsArrowRepeat/>
-                                                    </ChatButton>
-                                                </MyTooltip>
+                                                {message.type === 'text' && (
+                                                    <>
+                                                        <MyTooltip label='复制'>
+                                                            <ChatButton onClick={() => copyTextToClipboard(message.content)}>
+                                                                <GoCopy/>
+                                                                <Toaster/>
+                                                            </ChatButton>
+                                                        </MyTooltip>
+                                                        <MyTooltip label='重新生成'>
+                                                            <ChatButton onClick={() => Regenerate(message.id, message.content)}>
+                                                                <BsArrowRepeat/>
+                                                            </ChatButton>
+                                                        </MyTooltip>
+                                                    </>
+                                                )}
                                                 <MyTooltip label='删除'>
                                                     <ChatButton>
                                                         <RiDeleteBinLine/>
@@ -153,10 +160,11 @@ export default function MessageList({selectAppId, currentModel, selectChatId,mes
                                                 </div>
                                             </Flex>
                                         </div>
-                                        <div
-                                            className='bg-blue-100 rounded-lg shadow-[0_2px_2px_2px_rgba(96,165,250,0.3)] text-sm mt-3 text-right px-2 py-2 max-w-fit ml-auto'>
-                                            <Markdown>{message.content}</Markdown>
-                                        </div>
+                                        {message.type === 'image' ? (<Image src={message.url} alt='image' width={message.width || 600} height={message.height || 600} />) : (
+                                            <div
+                                                className='bg-blue-100 rounded-lg shadow-[0_2px_2px_2px_rgba(96,165,250,0.3)] text-sm mt-3 text-right px-2 py-2 max-w-fit ml-auto'>
+                                                <Markdown>{message.content}</Markdown>
+                                            </div>)}
                                     </div>
                                 )}
                                 {message.role === 'assistant' && (

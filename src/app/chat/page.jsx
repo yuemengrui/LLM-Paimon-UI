@@ -14,7 +14,7 @@ import {create_app_chat} from "../../api_servers/app";
 export default function Chat() {
     const [messageList, setMessageList] = useState([])
     const [appList, setAppList] = useState([])
-    const [selectAppId, setSelectAppId] = useState(null)
+    const [selectApp, setSelectApp] = useState({})
     const [chatList, setChatList] = useState([])
     const [selectChatId, setSelectChatId] = useState(null)
     const [currentModel, setCurrentModel] = useState(undefined)
@@ -23,7 +23,7 @@ export default function Chat() {
         const res = await get_app_list()
         if (res && res.length > 0) {
             setAppList(res)
-            setSelectAppId(res[0].id)
+            setSelectApp(res[0])
             setCurrentModel(res[0].llm_name)
         }
     }
@@ -55,8 +55,8 @@ export default function Chat() {
         setSelectChatId(null)
         setChatList([])
         setMessageList([])
-        getAppChatList(selectAppId)
-    }, [selectAppId]);
+        getAppChatList(selectApp.id)
+    }, [selectApp]);
 
     useEffect(() => {
         setMessageList([])
@@ -64,8 +64,8 @@ export default function Chat() {
     }, [selectChatId]);
 
     async function newChat() {
-        await create_app_chat(selectAppId)
-        const chat_list_res = await get_app_chat_list(selectAppId)
+        await create_app_chat(selectApp.id)
+        const chat_list_res = await get_app_chat_list(selectApp.id)
 
         if (chat_list_res.length > 0) {
             setChatList(chat_list_res)
@@ -87,12 +87,12 @@ export default function Chat() {
 
     return (
             <div className='flex w-full bg-blue-50/30'>
-                {appList.length && (
+                {appList.length > 0 && (
                     <>
-                        <AppList appList={appList} selectAppId={selectAppId} setSelectAppId={setSelectAppId} setCurrentModel={setCurrentModel} />
+                        <AppList appList={appList} selectApp={selectApp} setSelectApp={setSelectApp} setCurrentModel={setCurrentModel} />
                         <div className='w-[1px] h-full bg-gray-200'/>
                         <div className='flex flex-1 border border-gray-200 bg-white rounded-3xl mt-4 mr-4 ml-4 mb-4'>
-                            <ChatSidebar appName={appList.filter((item) => item.id === selectAppId)[0].name} chatList={chatList} selectChatId={selectChatId} setSelectChatId={setSelectChatId} newChat={newChat} />
+                            <ChatSidebar appName={appList.filter((item) => item.id === selectApp.id)[0].name} chatList={chatList} selectChatId={selectChatId} setSelectChatId={setSelectChatId} newChat={newChat} />
                             <div className='w-[1px] h-full bg-gray-200'/>
                             {selectChatId && (
                                 <>
@@ -101,12 +101,12 @@ export default function Chat() {
                                             <Flex gap={3}>
                                                 <div>{chatList.length ? chatList.filter((item) => item.id === selectChatId)[0].name || '新对话' : '新对话'}</div>
                                                 <Tag text={messageList.length + '条记录'}/>
-                                                <Tag text={appList.filter((item) => item.id === selectAppId)[0].llm_name}/>
+                                                <Tag text={appList.filter((item) => item.id === selectApp.id)[0].llm_name}/>
                                             </Flex>
                                         </div>
                                         <div className='h-[1px] w-full bg-gray-200'/>
-                                        {messageList.length ? (<MessageList selectAppId={selectAppId} currentModel={currentModel} selectChatId={selectChatId} messageList={messageList} addMessage={addMessage} delMessage={delMessage} updateMessage={updateMessage}/>) : (<Welcome/>)}
-                                        <ChatInput selectAppId={selectAppId} currentModel={currentModel} selectChatId={selectChatId} addMessage={addMessage} updateMessage={updateMessage}/>
+                                        {messageList.length ? (<MessageList selectApp={selectApp} currentModel={currentModel} selectChatId={selectChatId} messageList={messageList} addMessage={addMessage} delMessage={delMessage} updateMessage={updateMessage}/>) : (<Welcome/>)}
+                                        <ChatInput selectApp={selectApp} currentModel={currentModel} selectChatId={selectChatId} addMessage={addMessage} updateMessage={updateMessage}/>
                                     </div>
                                 </>
                             )}
