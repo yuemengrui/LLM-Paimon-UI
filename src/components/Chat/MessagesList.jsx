@@ -1,16 +1,16 @@
 'use client'
-import Markdown from "@/components/common/Markdown"
+import Markdown from "src/components/common/Markdown"
 import {SiOpenai} from "react-icons/si"
 import {useEffect, useRef, useState} from "react";
-import Tag from "@/components/Tag/Tag"
+import Tag from "src/components/Tag/Tag"
 import {Flex, Button} from "@chakra-ui/react"
-import MyTooltip from "@/components/Tooltip/Tooltip";
+import MyTooltip from "src/components/Tooltip/Tooltip";
 import {GoCopy} from "react-icons/go";
 import {RiDeleteBinLine} from "react-icons/ri";
 import {BsArrowRepeat} from "react-icons/bs";
 import {LuPenLine} from "react-icons/lu";
 import {CiStar} from "react-icons/ci";
-import ChatButton from "@/components/ChatButton/ChatButton";
+import ChatButton from "src/components/ChatButton/ChatButton";
 import {v4 as uuidv4} from "uuid";
 import toast, {Toaster} from 'react-hot-toast';
 import {
@@ -28,7 +28,15 @@ import {fetchEventSource} from "@microsoft/fetch-event-source";
 import Image from "next/image";
 
 
-export default function MessageList({selectApp, currentModel, selectChatId,messageList, addMessage, delMessage, updateMessage}) {
+export default function MessageList({
+                                        selectApp,
+                                        currentModel,
+                                        selectChatId,
+                                        messageList,
+                                        addMessage,
+                                        delMessage,
+                                        updateMessage
+                                    }) {
     const [showFullResponseModal, setShowFullResponseModal] = useState(false)
     const [fullResponse, setFullResponse] = useState({})
     const [showAnswerLabelModal, setShowAnswerLabelModal] = useState(false)
@@ -85,7 +93,16 @@ export default function MessageList({selectApp, currentModel, selectChatId,messa
                 } catch (e) {
                     console.log(e)
                 }
-
+            },
+            onerror(error) {
+                updateMessage({
+                    id: responseMessage.id,
+                    role: responseMessage.role,
+                    type: 'text',
+                    content: '抱歉！服务繁忙！请稍后重试！',
+                    response: {},
+                })
+                throw error
             }
         })
     }
@@ -138,13 +155,15 @@ export default function MessageList({selectApp, currentModel, selectChatId,messa
                                                 {message.type === 'text' && (
                                                     <>
                                                         <MyTooltip label='复制'>
-                                                            <ChatButton onClick={() => copyTextToClipboard(message.content)}>
+                                                            <ChatButton
+                                                                onClick={() => copyTextToClipboard(message.content)}>
                                                                 <GoCopy/>
                                                                 <Toaster/>
                                                             </ChatButton>
                                                         </MyTooltip>
                                                         <MyTooltip label='重新生成'>
-                                                            <ChatButton onClick={() => Regenerate(message.id, message.content)}>
+                                                            <ChatButton
+                                                                onClick={() => Regenerate(message.id, message.content)}>
                                                                 <BsArrowRepeat/>
                                                             </ChatButton>
                                                         </MyTooltip>
@@ -160,7 +179,9 @@ export default function MessageList({selectApp, currentModel, selectChatId,messa
                                                 </div>
                                             </Flex>
                                         </div>
-                                        {message.type === 'image' ? (<Image src={message.url} alt='image' width={message.width || 600} height={message.height || 600} />) : (
+                                        {message.type === 'image' ? (
+                                            <Image src={message.url} alt='image' width={message.width || 600}
+                                                   height={message.height || 600}/>) : (
                                             <div
                                                 className='bg-blue-100 rounded-lg shadow-[0_2px_2px_2px_rgba(96,165,250,0.3)] text-sm mt-3 text-right px-2 py-2 max-w-fit ml-auto'>
                                                 <Markdown>{message.content}</Markdown>
@@ -207,8 +228,9 @@ export default function MessageList({selectApp, currentModel, selectChatId,messa
                                                         text={`${message.response.history ? message.response.history.length : 0}对上下文`}/>
                                                 </MyTooltip>
                                                 <MyTooltip label='知识库中的引用'>
-                                                    <Tag text={`${message.response.retrieval ? message.response.retrieval.sources_len : 0}条引用`}
-                                                         onClick={() => showRetrieverData(message.response.retrieval.sources)}/>
+                                                    <Tag
+                                                        text={`${message.response.retrieval ? message.response.retrieval.sources_len : 0}条引用`}
+                                                        onClick={() => showRetrieverData(message.response.retrieval.sources)}/>
                                                 </MyTooltip>
                                                 <MyTooltip label='本次请求总共使用的token数量'>
                                                     <Tag

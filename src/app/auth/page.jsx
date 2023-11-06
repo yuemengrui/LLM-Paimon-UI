@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react'
 import {useEffect, useState} from "react";
 import {useRouter} from 'next/navigation';
-import {auth} from "../../api_servers/auth";
+import {auth} from "src/api_servers/auth";
 import {AiOutlineEyeInvisible} from "react-icons/ai";
 import {AiOutlineEye} from "react-icons/ai";
 import toast, {Toaster} from "react-hot-toast";

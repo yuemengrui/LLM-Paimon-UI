@@ -3,7 +3,7 @@
 
 import {useEffect} from "react";
 import {useRouter} from 'next/navigation';
-import {auth_token_verify} from "@/api_servers/auth";
+import {auth_token_verify} from "src/api_servers/auth";
 
 export default function Paimon() {
     const router = useRouter()

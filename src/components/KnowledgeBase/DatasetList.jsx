@@ -3,16 +3,14 @@ import {
     Table,
     Thead,
     Tbody,
-    Tfoot,
     Tr,
     Th,
     Td,
-    TableCaption,
     TableContainer,
 } from '@chakra-ui/react'
 import {RiDeleteBinLine} from "react-icons/ri";
 import toast, {Toaster} from "react-hot-toast";
-import {get_kb_data_list} from "../../api_servers/knowledge_base";
+import {get_kb_data_list} from "src/api_servers/knowledge_base";
 import {useEffect, useState} from "react";
 
 export default function DatasetList({kb_id}) {

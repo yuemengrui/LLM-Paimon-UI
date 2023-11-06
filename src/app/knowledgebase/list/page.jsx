@@ -18,8 +18,8 @@ import toast, {Toaster} from "react-hot-toast";
 import React, {useEffect, useState} from "react";
 import {useRouter} from 'next/navigation';
 import {RiDeleteBinLine} from "react-icons/ri";
-import {get_knowledge_base_list, kb_create, kb_delete} from "../../../api_servers/knowledge_base";
-import {get_embedding_model_list} from "../../../api_servers/embedding";
+import {get_knowledge_base_list, kb_create, kb_delete} from "src/api_servers/knowledge_base";
+import {get_embedding_model_list} from "src/api_servers/embedding";
 
 
 export default function KnowledgeBase() {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {fileUpload} from "../../api_servers/file";
+import {fileUpload} from "src/api_servers/file";
 
 
 const FileUpload = ({uploadFiles, setUploadFiles, accept, fileLimit=10}) => {

@@ -1,8 +1,8 @@
 'use client'
 import {useEffect, useState} from "react";
-import {get_app_list, get_app_create_system_app_list, app_create, app_delete, app_create_system_app} from "../../api_servers/app";
-import {get_llm_list} from "../../api_servers/chat";
-import {get_knowledge_base_list} from "../../api_servers/knowledge_base";
+import {get_app_list, get_app_create_system_app_list, app_create, app_delete, app_create_system_app} from "src/api_servers/app";
+import {get_llm_list} from "src/api_servers/chat";
+import {get_knowledge_base_list} from "src/api_servers/knowledge_base";
 import {
     Grid,
     Card,

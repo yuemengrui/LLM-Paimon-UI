@@ -3,8 +3,8 @@ import {useSearchParams} from 'next/navigation';
 import {Flex} from "@chakra-ui/react";
 import {SiOpenai} from "react-icons/si";
 import {useState} from "react";
-import DatasetList from "../../../components/KnowledgeBase/DatasetList";
-import ImportData from "../../../components/KnowledgeBase/ImportData";
+import DatasetList from "src/components/KnowledgeBase/DatasetList";
+import ImportData from "src/components/KnowledgeBase/ImportData";
 
 export default function KnowledgeBaseInfo() {
     const searchParams = useSearchParams()

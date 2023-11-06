@@ -2,7 +2,7 @@
 import {Flex} from "@chakra-ui/react";
 import {SiOpenai} from "react-icons/si";
 import {useState} from "react";
-import Markdown from "@/components/common/Markdown"
+import Markdown from "src/components/common/Markdown"
 import Image from "next/image";
 
 export default function Show() {

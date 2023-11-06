@@ -1,9 +1,9 @@
 'use client'
 import {Flex, Grid} from '@chakra-ui/react'
 import toast, {Toaster} from "react-hot-toast";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import FileUpload from "../FileUpload/FileUpload";
-import {kb_data_import} from "../../api_servers/knowledge_base";
+import {kb_data_import} from "src/api_servers/knowledge_base";
 
 export default function ImportData({kb_id}) {
 

@@ -1,14 +1,14 @@
 'use client'
-import ChatInput from "@/components/Chat/ChatInput";
-import Welcome from "@/components/Chat/Welcome";
-import MessageList from "@/components/Chat/MessagesList";
+import ChatInput from "src/components/Chat/ChatInput";
+import Welcome from "src/components/Chat/Welcome";
+import MessageList from "src/components/Chat/MessagesList";
 import {useEffect, useState} from "react";
-import Tag from "@/components/Tag/Tag";
+import Tag from "src/components/Tag/Tag";
 import {Flex} from "@chakra-ui/react";
-import ChatSidebar from "@/components/Chat/ChatSidebar";
-import AppList from "@/components/Chat/AppList";
-import {get_app_list, get_app_chat_list, get_app_chat_message_list} from "../../api_servers/app";
-import {create_app_chat} from "../../api_servers/app";
+import ChatSidebar from 'src/components/Chat/ChatSidebar';
+import AppList from "src/components/Chat/AppList";
+import {get_app_list, get_app_chat_list, get_app_chat_message_list} from "src/api_servers/app";
+import {create_app_chat} from "src/api_servers/app";
 
 
 export default function Chat() {
@@ -101,7 +101,7 @@ export default function Chat() {
                                             <Flex gap={3}>
                                                 <div>{chatList.length ? chatList.filter((item) => item.id === selectChatId)[0].name || '新对话' : '新对话'}</div>
                                                 <Tag text={messageList.length + '条记录'}/>
-                                                <Tag text={appList.filter((item) => item.id === selectApp.id)[0].llm_name}/>
+                                                 <Tag text={appList.filter((item) => item.id === selectApp.id)[0].llm_name}/>
                                             </Flex>
                                         </div>
                                         <div className='h-[1px] w-full bg-gray-200'/>

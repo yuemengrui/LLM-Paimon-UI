@@ -1,12 +1,12 @@
-import MyButton from "@/components/common/MyButton"
+import MyButton from "src/components/common/MyButton"
 import {PiLightningFill} from "react-icons/pi"
 import {FiSend} from "react-icons/fi"
 import TextareaAutoSize from "react-textarea-autosize"
 import React, {useEffect, useState} from "react"
 import {v4 as uuidv4} from "uuid"
 import {fetchEventSource} from '@microsoft/fetch-event-source';
-import {fileUpload} from "../../api_servers/file";
-import {table_analysis} from "../../api_servers/table";
+import {fileUpload} from "src/api_servers/file";
+import {table_analysis} from "src/api_servers/table";
 import toast, {Toaster} from "react-hot-toast";
 
 export default function ChatInput({selectApp, currentModel, selectChatId, addMessage, updateMessage}) {
@@ -21,7 +21,7 @@ export default function ChatInput({selectApp, currentModel, selectChatId, addMes
 
     useEffect(() => {
 
-        async function file_upload(data){
+        async function file_upload(data) {
             const res = await fileUpload(data)
 
             if (res) {
@@ -47,8 +47,8 @@ export default function ChatInput({selectApp, currentModel, selectChatId, addMes
                     updateMessage({
                         id: req_data.uid,
                         role: 'user',
-                        type:'image',
-                        url:table_analysis_res.file_url,
+                        type: 'image',
+                        url: table_analysis_res.file_url,
                         height: 600,
                         width: 600
                     })
@@ -60,12 +60,15 @@ export default function ChatInput({selectApp, currentModel, selectChatId, addMes
                         response: {}
                     })
                     setTableContent(table_analysis_res.table_content)
-                    setCustom({'tableQA': {
-                        'table_content': table_analysis_res.table_content
-                        }})
+                    setCustom({
+                        'tableQA': {
+                            'table_content': table_analysis_res.table_content
+                        }
+                    })
                 }
             }
         }
+
         if (selectFile) {
             const formData = new FormData();
 
@@ -120,7 +123,6 @@ export default function ChatInput({selectApp, currentModel, selectChatId, addMes
                 "model_name": currentModel,
                 "custom": custom
             }),
-
             onmessage(msg) {
                 // 解码内容
                 try {
@@ -136,6 +138,16 @@ export default function ChatInput({selectApp, currentModel, selectChatId, addMes
                     console.log(e)
                 }
 
+            },
+            onerror(error) {
+                updateMessage({
+                    id: responseMessage.id,
+                    role: responseMessage.role,
+                    type: 'text',
+                    content: '抱歉！服务繁忙！请稍后重试！',
+                    response: {},
+                })
+                throw error
             }
         })
     }
@@ -156,8 +168,10 @@ export default function ChatInput({selectApp, currentModel, selectChatId, addMes
         <div className='absolute bottom-6 inset-x-0'>
             {selectApp.name === 'tableQA' && (
                 <div className='text-center mb-4 mt-2'>
-                    <label htmlFor="upload-button" className="cursor-pointer text-blue-600 underline decoration-blue-600">上传一张表格图片</label>
-                    <input id="upload-button" style={{ display: "none" }} accept='.jpg,.png,.jpeg' type="file" onChange={changeHandler} />
+                    <label htmlFor="upload-button"
+                           className="cursor-pointer text-blue-600 underline decoration-blue-600">上传一张表格图片</label>
+                    <input id="upload-button" style={{display: "none"}} accept='.jpg,.png,.jpeg' type="file"
+                           onChange={changeHandler}/>
                 </div>
             )}
             <div className='w-full max-w-4xl mx-auto flex flex-col items-center px-4 space-y-4'>
