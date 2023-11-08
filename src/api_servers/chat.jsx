@@ -36,7 +36,9 @@ export async function get_llm_list() {
     console.log('llm list response', response)
 
     if (response) {
-        return response['data']['model_list']
+        return response['data']
+    }else {
+        return []
     }
 }
 

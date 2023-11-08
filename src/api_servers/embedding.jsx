@@ -15,9 +15,8 @@ export async function get_embedding_model_list() {
     console.log('response', response)
 
     if (response) {
-        return response['data']['model_list']
-    }
-    else {
+        return response['data']
+    } else {
         return []
     }
 }

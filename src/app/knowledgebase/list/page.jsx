@@ -159,7 +159,7 @@ export default function KnowledgeBase() {
                             >
                                 <Stack spacing={[1, 5]} direction={['row', 'column']}>
                                     {embModelList.map((item) => (
-                                        <Checkbox key={item} value={item}>{item}</Checkbox>
+                                        <Checkbox key={item.model_name} value={item.model_name}>{item.model_name}</Checkbox>
                                     ))}
                                 </Stack>
                             </CheckboxGroup>

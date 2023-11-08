@@ -11,6 +11,10 @@
 #### TODO
  - [ ] 演示中心
    - [ ] TableQA
-   - [ ] 图片问答
  - [ ] 模型竞技场
+ - [ ] MultiEmbeddingRetriever
+ - [ ] Retrieval relevance judgment
+ - [ ] office Document layout Embedding
+ - [ ] 多模态检索
+ - [ ] ASR & TTS
  - [ ] 应用高级编排

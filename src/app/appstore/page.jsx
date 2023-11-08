@@ -36,7 +36,6 @@ export default function AppStore() {
 
     async function getAppList() {
         const res = await get_app_list()
-        console.log('app list res', res)
         setAppList(res)
     }
 
@@ -74,7 +73,6 @@ export default function AppStore() {
     }
 
     async function createApp() {
-        console.log('111: ',selectSystemApp, appType)
         if (appType === 0) {
             await app_create_system_app(selectSystemApp)
             closeModal()
@@ -199,7 +197,7 @@ export default function AppStore() {
                                         >
                                             {llmList.map((item) => {
                                                 return (
-                                                    <option key={item}>{item}</option>
+                                                    <option key={item.model_name}>{item.model_name}</option>
                                                 )
                                             })}
                                         </Select>
