@@ -1,6 +1,12 @@
 'use client'
 import {useEffect, useState} from "react";
-import {get_app_list, get_app_create_system_app_list, app_create, app_delete, app_create_system_app} from "src/api_servers/app";
+import {
+    get_app_list,
+    get_app_create_system_app_list,
+    app_create,
+    app_delete,
+    app_create_system_app
+} from "src/api_servers/app";
 import {get_llm_list} from "src/api_servers/chat";
 import {get_knowledge_base_list} from "src/api_servers/knowledge_base";
 import {
@@ -15,14 +21,17 @@ import {
     ModalHeader,
     ModalOverlay, Flex
 } from "@chakra-ui/react";
-import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
-import { Input, Select } from '@chakra-ui/react'
-import toast, {Toaster} from 'react-hot-toast';
+import {Tabs, TabList, TabPanels, Tab, TabPanel} from '@chakra-ui/react'
+import {Input, Select} from '@chakra-ui/react'
+import {useToast} from '@chakra-ui/react'
 import {RiDeleteBinLine} from "react-icons/ri";
+import MyTooltip from "src/components/Tooltip/Tooltip";
+import {useRouter} from "next/navigation";
 
 
 export default function AppStore() {
-
+    const router = useRouter();
+    const toast = useToast()
     const [appList, setAppList] = useState([])
     const [llmList, setLlmList] = useState([])
     const [KBList, setKBList] = useState([])
@@ -39,11 +48,11 @@ export default function AppStore() {
         setAppList(res)
     }
 
-    useEffect( () => {
+    useEffect(() => {
         getAppList()
     }, []);
 
-    useEffect( () => {
+    useEffect(() => {
         async function getList() {
             const system_app_res = await get_app_create_system_app_list()
             if (system_app_res && system_app_res.length > 0) {
@@ -60,6 +69,7 @@ export default function AppStore() {
                 setKBList(kb_res)
             }
         }
+
         getList()
     }, [showCreateAppModal]);
 
@@ -74,20 +84,70 @@ export default function AppStore() {
 
     async function createApp() {
         if (appType === 0) {
-            await app_create_system_app(selectSystemApp)
+            const resp = await app_create_system_app(selectSystemApp)
+            if (resp) {
+                if (resp.errmsg) {
+                    toast({
+                        title: '失败',
+                        description: resp.errmsg,
+                        status: 'error',
+                        position: 'top',
+                        duration: 2000,
+                    })
+                } else {
+                    toast({
+                        title: '成功',
+                        status: 'success',
+                        position: 'top',
+                        duration: 2000,
+                    })
+                }
+            } else {
+                toast({
+                    title: '失败',
+                    status: 'error',
+                    position: 'top',
+                    duration: 2000,
+                })
+            }
             closeModal()
             getAppList()
-        }
-        else {
+        } else {
             if (newAppName && selectLLM) {
-                await app_create(newAppName, selectLLM, selectKB)
+                const resp = await app_create(newAppName, selectLLM, selectKB)
+                if (resp) {
+                    if (resp.errmsg) {
+                        toast({
+                            title: '失败',
+                            description: resp.errmsg,
+                            status: 'error',
+                            position: 'top',
+                            duration: 2000,
+                        })
+                    } else {
+                        toast({
+                            title: '成功',
+                            status: 'success',
+                            position: 'top',
+                            duration: 2000,
+                        })
+                    }
+                } else {
+                    toast({
+                        title: '失败',
+                        status: 'error',
+                        position: 'top',
+                        duration: 2000,
+                    })
+                }
                 closeModal()
                 getAppList()
-            }
-            else {
-                toast.error("请填写应用名称和选择模型", {
+            } else {
+                toast({
+                    title: "请填写应用名称和选择模型",
+                    status: 'error',
+                    position: 'top',
                     duration: 2000,
-                    position: 'top-center'
                 })
             }
         }
@@ -95,20 +155,46 @@ export default function AppStore() {
 
     function createNewApp() {
         if (appList.length >= 10) {
-            toast.error("只允许创建10个应用", {
+            toast({
+                title: "只允许创建10个应用",
+                status: 'error',
+                position: 'top',
                 duration: 2000,
-                position: 'top-center'
             })
-        }
-        else {
+        } else {
             setShowCreateAppModal(true)
         }
     }
 
     async function delete_app(e, app_id) {
         e.stopPropagation()
-        await app_delete(app_id)  // 调后台接口删除
-        getAppList() // 调后台接口获取新的 APP list
+        const resp = await app_delete(app_id)  // 调后台接口删除
+        if (resp) {
+            if (resp.errmsg) {
+                toast({
+                    title: '失败',
+                    description: resp.errmsg,
+                    status: 'error',
+                    position: 'top',
+                    duration: 2000,
+                })
+            } else {
+                toast({
+                    title: '成功',
+                    status: 'success',
+                    position: 'top',
+                    duration: 2000,
+                })
+            }
+        } else {
+            toast({
+                title: '失败',
+                status: 'error',
+                position: 'top',
+                duration: 2000,
+            })
+        }
+        getAppList() // 调后台接口获取新的 AppStore list
     }
 
 
@@ -122,25 +208,29 @@ export default function AppStore() {
                     gridGap={5}
                 >
                     {appList.map((item) => (
-                        <Card
-                            key={item.id}
-                            py={4}
-                            px={5}
-                            cursor={'pointer'}
-                            h={'140px'}
-                            bgColor={'pink.100'}
-                            position={'relative'}
-                            _hover={{
-                                boxShadow: '1px 1px 10px rgba(0,0,0,0.6)',
-                                borderColor: 'transparent'
-                            }}
-                        >
-                            <div className='text-center text-blue-500 text-2xl'>{item.name}</div>
-                            <div className='mt-8 text-center text-sm'>{'模型：' + item.llm_name}</div>
-                            {item.kb_name && (<div className='mt-1 text-center text-sm'>{'知识库：' + item.kb_name}</div>)}
-                            <RiDeleteBinLine className='absolute right-3 hover:text-red-600'
-                                             onClick={(e) => delete_app(e, item.id)}/>
-                        </Card>
+                        <MyTooltip label='点击查看详情'>
+                            <Card
+                                key={item.id}
+                                py={4}
+                                px={5}
+                                cursor={'pointer'}
+                                h={'140px'}
+                                bgColor={'pink.100'}
+                                position={'relative'}
+                                onClick={() => router.push(`/appstore/info?app_id=${item.id}`)}
+                                _hover={{
+                                    boxShadow: '1px 1px 10px rgba(0,0,0,0.6)',
+                                    borderColor: 'transparent'
+                                }}
+                            >
+                                <div className='text-center text-blue-500 text-2xl'>{item.name}</div>
+                                <div className='mt-8 text-center text-sm'>{'模型：' + item.llm_name}</div>
+                                {item.kb_name && (
+                                    <div className='mt-1 text-center text-sm'>{'知识库：' + item.kb_name}</div>)}
+                                <RiDeleteBinLine className='absolute right-3 hover:text-red-600'
+                                                 onClick={(e) => delete_app(e, item.id)}/>
+                            </Card>
+                        </MyTooltip>
                     ))}
                 </Grid>
                 <div
@@ -152,15 +242,14 @@ export default function AppStore() {
                     >
                         创建新应用
                     </button>
-                    <Toaster/>
                 </div>
             </div>
             {showCreateAppModal && (
                 <Modal isOpen={true} onClose={closeModal}>
-                    <ModalOverlay />
+                    <ModalOverlay/>
                     <ModalContent>
                         <ModalHeader>创建新的应用</ModalHeader>
-                        <ModalCloseButton />
+                        <ModalCloseButton/>
                         <ModalBody>
                             <Tabs
                                 variant='soft-rounded'
@@ -189,10 +278,14 @@ export default function AppStore() {
                                     </TabPanel>
                                     <TabPanel>
                                         <div>应用名称</div>
-                                        <Input value={newAppName} onChange={(e) => {setNewAppName(e.target.value)}} placeholder={'请输入应用名称...'}/>
+                                        <Input value={newAppName} onChange={(e) => {
+                                            setNewAppName(e.target.value)
+                                        }} placeholder={'请输入应用名称...'}/>
                                         <div>请选择模型</div>
                                         <Select
-                                            onChange={(e) => {setSelectLLM(e.target.value)}}
+                                            onChange={(e) => {
+                                                setSelectLLM(e.target.value)
+                                            }}
                                             placeholder='请选择模型'
                                         >
                                             {llmList.map((item) => {
@@ -203,7 +296,9 @@ export default function AppStore() {
                                         </Select>
                                         <div>请选择知识库，可不选</div>
                                         <Select
-                                            onChange={(e) => {setSelectKB(e.target.value)}}
+                                            onChange={(e) => {
+                                                setSelectKB(e.target.value)
+                                            }}
                                             placeholder='请选择知识库'
                                         >
                                             {KBList.map((item) => {
@@ -218,7 +313,6 @@ export default function AppStore() {
                         </ModalBody>
                         <ModalFooter>
                             <Button border='1px' borderColor='gray.200' onClick={createApp}>确认</Button>
-                            <Toaster />
                         </ModalFooter>
                     </ModalContent>
                 </Modal>

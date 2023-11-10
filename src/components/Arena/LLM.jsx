@@ -29,7 +29,6 @@ import {PiLightningFill} from "react-icons/pi";
 import TextareaAutoSize from "react-textarea-autosize";
 import MyButton from "../common/MyButton";
 import {FiSend} from "react-icons/fi";
-import toast, {Toaster} from "react-hot-toast";
 import {v4 as uuidv4} from "uuid";
 import {fetchEventSource} from "@microsoft/fetch-event-source";
 import MyTooltip from "../Tooltip/Tooltip";
@@ -41,9 +40,11 @@ import {SiOpenai} from "react-icons/si";
 import {CiStar} from "react-icons/ci";
 import Tag from "../Tag/Tag";
 import {get_llm_list} from "src/api_servers/chat";
+import {useToast} from '@chakra-ui/react'
 
 
 export default function LLM() {
+    const toast = useToast()
     const [messageText, setMessageText] = useState("")
     const [messageList, setMessageList] = useState([])
     const [llmList, setLlmList] = useState([])
@@ -189,9 +190,11 @@ export default function LLM() {
         } else {
             document.execCommand('copy', true, text);
         }
-        toast.success('复制成功', {
+        toast({
+            title: '复制成功',
+            status: 'success',
+            position: 'top',
             duration: 2000,
-            position: 'top-center'
         })
     }
 
@@ -294,7 +297,6 @@ export default function LLM() {
                                                                 <ChatButton
                                                                     onClick={() => copyTextToClipboard(message.content)}>
                                                                     <GoCopy/>
-                                                                    <Toaster/>
                                                                 </ChatButton>
                                                             </MyTooltip>
                                                         </>
@@ -325,7 +327,6 @@ export default function LLM() {
                                                         <ChatButton
                                                             onClick={() => copyTextToClipboard(message.content)}>
                                                             <GoCopy/>
-                                                            <Toaster/>
                                                         </ChatButton>
                                                     </MyTooltip>
                                                     <MyTooltip

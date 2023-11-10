@@ -9,11 +9,12 @@ import {
     TableContainer,
 } from '@chakra-ui/react'
 import {RiDeleteBinLine} from "react-icons/ri";
-import toast, {Toaster} from "react-hot-toast";
 import {get_kb_data_list} from "src/api_servers/knowledge_base";
 import {useEffect, useState} from "react";
+import {useToast} from '@chakra-ui/react'
 
 export default function DatasetList({kb_id}) {
+    const toast = useToast()
     const [dataList, setDataList] = useState([])
 
     async function getDataList() {
@@ -26,17 +27,21 @@ export default function DatasetList({kb_id}) {
     }, []);
 
     function showDataDetail() {
-        toast('展示数据详情正在开发中...', {
+        toast({
+            title: '展示数据详情正在开发中...',
+            status: 'warning',
+            position: 'top',
             duration: 2000,
-            position: 'top-center'
         })
     }
 
     function deleteData(e, data_id) {
         e.stopPropagation()
-        toast('删除数据:'+ data_id + ' 正在开发中...', {
+        toast({
+            title: '删除数据:'+ data_id + ' 正在开发中...',
+            status: 'warning',
+            position: 'top',
             duration: 2000,
-            position: 'top-center'
         })
     }
     return (
@@ -70,7 +75,6 @@ export default function DatasetList({kb_id}) {
                                             className='hover:text-red-600'
                                             onClick={(e) => {deleteData(e, item.id)}}
                                         />
-                                        <Toaster/>
                                     </Td>
                                 </Tr>
                             ))}

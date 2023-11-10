@@ -7,9 +7,10 @@ import {v4 as uuidv4} from "uuid"
 import {fetchEventSource} from '@microsoft/fetch-event-source';
 import {fileUpload} from "src/api_servers/file";
 import {table_analysis} from "src/api_servers/table";
-import toast, {Toaster} from "react-hot-toast";
+import {useToast} from '@chakra-ui/react'
 
 export default function ChatInput({selectApp, currentModel, selectChatId, addMessage, updateMessage}) {
+    const toast = useToast()
     const [messageText, setMessageText] = useState("")
     const [selectFile, setSelectFile] = useState(null)
     const [tableContent, setTableContent] = useState('')
@@ -81,9 +82,11 @@ export default function ChatInput({selectApp, currentModel, selectChatId, addMes
     async function send() {
         if (selectApp.name === 'tableQA') {
             if (tableContent === '') {
-                toast.error('请重新上传表格图片', {
+                toast({
+                    title: '请重新上传表格图片',
+                    status: 'error',
+                    position: 'top',
                     duration: 2000,
-                    position: 'top-center'
                 })
                 setMessageText("")
                 return
@@ -185,6 +188,7 @@ export default function ChatInput({selectApp, currentModel, selectChatId, addMes
                         placeholder='输入一条消息...'
                         rows={1}
                         value={messageText}
+                        maxLength={32*1024}
                         onKeyDown={handleEnter}
                         onChange={(e) => {
                             if (!(e.target.value === '\n')) {
@@ -192,7 +196,6 @@ export default function ChatInput({selectApp, currentModel, selectChatId, addMes
                             }
                         }}
                     />
-                    <Toaster/>
                     <MyButton
                         className='mx-3 !rounded-lg text-blue-500'
                         icon={FiSend}

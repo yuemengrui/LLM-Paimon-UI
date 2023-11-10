@@ -14,16 +14,18 @@ import {
     Checkbox,
     CheckboxGroup
 } from "@chakra-ui/react";
-import toast, {Toaster} from "react-hot-toast";
+import {useToast} from '@chakra-ui/react'
 import React, {useEffect, useState} from "react";
 import {useRouter} from 'next/navigation';
 import {RiDeleteBinLine} from "react-icons/ri";
 import {get_knowledge_base_list, kb_create, kb_delete} from "src/api_servers/knowledge_base";
 import {get_embedding_model_list} from "src/api_servers/embedding";
+import MyTooltip from "src/components/Tooltip/Tooltip";
 
 
 export default function KnowledgeBase() {
     const router = useRouter();
+    const toast = useToast()
 
     const [KBList, setKBList] = useState([])
     const [embModelList, setEmbModelList] = useState([])
@@ -62,9 +64,11 @@ export default function KnowledgeBase() {
 
     async function createKB() {
         if (!(newKBName && selectEmbModelList.length)) {
-            toast.error('知识库名称和embedding模型不能为空', {
+            toast({
+                title: '知识库名称和embedding模型不能为空',
+                status: 'error',
+                position: 'top',
                 duration: 2000,
-                position: 'top-center'
             })
         } else {
             await kb_create(newKBName, selectEmbModelList)
@@ -76,9 +80,11 @@ export default function KnowledgeBase() {
 
     function createNewKB() {
         if (KBList.length >= 20) {
-            toast.error("只允许创建20个知识库", {
+            toast({
+                title: '只允许创建20个知识库',
+                status: 'error',
+                position: 'top',
                 duration: 2000,
-                position: 'top-center'
             })
         } else {
             setShowCreateKBModal(true)
@@ -102,29 +108,31 @@ export default function KnowledgeBase() {
                     gridGap={5}
                 >
                     {KBList.map((item) => (
-                        <Card
-                            key={item.id}
-                            py={4}
-                            px={5}
-                            cursor={'pointer'}
-                            h={'140px'}
-                            bgColor={'pink.100'}
-                            position={'relative'}
-                            onClick={() => router.push(`/knowledgebase/info?kb_id=${item.id}&kb_name=${item.name}`)}
-                            _hover={{
-                                boxShadow: '1px 1px 10px rgba(0,0,0,0.6)',
-                                borderColor: 'transparent'
-                            }}
-                        >
-                            <div className='text-center text-blue-500 text-2xl'>{item.name}</div>
-                            <ul className='mt-2 text-center text-sm'>
-                                {item.embedding_model_list.map((emb_model) => (
-                                    <li key={emb_model}>{emb_model}</li>
-                                ))}
-                            </ul>
-                            <RiDeleteBinLine className='absolute right-3 hover:text-red-600'
-                                             onClick={(e) => deleteKB(e, item.id)}/>
-                        </Card>
+                        <MyTooltip label='点击查看详情'>
+                            <Card
+                                key={item.id}
+                                py={4}
+                                px={5}
+                                cursor={'pointer'}
+                                h={'140px'}
+                                bgColor={'pink.100'}
+                                position={'relative'}
+                                onClick={() => router.push(`/knowledgebase/info?kb_id=${item.id}&kb_name=${item.name}`)}
+                                _hover={{
+                                    boxShadow: '1px 1px 10px rgba(0,0,0,0.6)',
+                                    borderColor: 'transparent'
+                                }}
+                            >
+                                <div className='text-center text-blue-500 text-2xl'>{item.name}</div>
+                                <ul className='mt-2 text-center text-sm'>
+                                    {item.embedding_model_list.map((emb_model) => (
+                                        <li key={emb_model}>{emb_model}</li>
+                                    ))}
+                                </ul>
+                                <RiDeleteBinLine className='absolute right-3 hover:text-red-600'
+                                                 onClick={(e) => deleteKB(e, item.id)}/>
+                            </Card>
+                        </MyTooltip>
                     ))}
                 </Grid>
                 <div
@@ -136,7 +144,6 @@ export default function KnowledgeBase() {
                     >
                         创建新知识库
                     </button>
-                    <Toaster/>
                 </div>
             </div>
             {showCreateKBModal && (
@@ -167,7 +174,6 @@ export default function KnowledgeBase() {
                         <ModalFooter>
                             <Button border='1px' borderColor='gray.200' onClick={createKB}>
                                 确认
-                                <Toaster/>
                             </Button>
                         </ModalFooter>
                     </ModalContent>

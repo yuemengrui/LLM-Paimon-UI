@@ -12,7 +12,6 @@ import {LuPenLine} from "react-icons/lu";
 import {CiStar} from "react-icons/ci";
 import ChatButton from "src/components/ChatButton/ChatButton";
 import {v4 as uuidv4} from "uuid";
-import toast, {Toaster} from 'react-hot-toast';
 import {
     Modal,
     ModalOverlay,
@@ -26,6 +25,7 @@ import JsonView from 'react18-json-view'
 import 'react18-json-view/src/style.css'
 import {fetchEventSource} from "@microsoft/fetch-event-source";
 import Image from "next/image";
+import {useToast} from '@chakra-ui/react'
 
 
 export default function MessageList({
@@ -37,6 +37,7 @@ export default function MessageList({
                                         delMessage,
                                         updateMessage
                                     }) {
+    const toast = useToast()
     const [showFullResponseModal, setShowFullResponseModal] = useState(false)
     const [fullResponse, setFullResponse] = useState({})
     const [showAnswerLabelModal, setShowAnswerLabelModal] = useState(false)
@@ -113,9 +114,11 @@ export default function MessageList({
         } else {
             document.execCommand('copy', true, text);
         }
-        toast.success('复制成功', {
+        toast({
+            title: '复制成功',
+            status: 'success',
+            position: 'top',
             duration: 2000,
-            position: 'top-center'
         })
     }
 
@@ -158,7 +161,6 @@ export default function MessageList({
                                                             <ChatButton
                                                                 onClick={() => copyTextToClipboard(message.content)}>
                                                                 <GoCopy/>
-                                                                <Toaster/>
                                                             </ChatButton>
                                                         </MyTooltip>
                                                         <MyTooltip label='重新生成'>
@@ -199,7 +201,6 @@ export default function MessageList({
                                                 <MyTooltip label='复制'>
                                                     <ChatButton onClick={() => copyTextToClipboard(message.content)}>
                                                         <GoCopy/>
-                                                        <Toaster/>
                                                     </ChatButton>
                                                 </MyTooltip>
                                                 <MyTooltip label='删除'>

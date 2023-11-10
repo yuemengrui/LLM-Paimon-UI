@@ -1,3 +1,4 @@
+'use client'
 import {SiOpenai} from "react-icons/si";
 import {Flex} from "@chakra-ui/react";
 import {PiBroom} from "react-icons/pi";
@@ -5,31 +6,39 @@ import {PiChatTeardropDotsThin} from "react-icons/pi";
 import {IoIosClose} from "react-icons/io";
 import {LiaThumbtackSolid} from "react-icons/lia";
 import MyTooltip from "../Tooltip/Tooltip";
-import toast, {Toaster} from 'react-hot-toast';
+import {useToast} from '@chakra-ui/react'
 
 
 export default function ChatSidebar({ appName, chatList, selectChatId, setSelectChatId, newChat }) {
 
+    const toast = useToast()
+
     function deleteChat(e, chat_id) {
         e.stopPropagation()
-        toast('该功能正在实现中，请稍等...', {
+        toast({
+            title: '该功能正在实现中，请稍等...',
+            status: 'warning',
+            position: 'top',
             duration: 2000,
-            position: 'top-center'
         })
     }
 
     function topping(e, chat_id) {
         e.stopPropagation()
-        toast('该功能正在实现中，请稍等...', {
+        toast({
+            title: '该功能正在实现中，请稍等...',
+            status: 'warning',
+            position: 'top',
             duration: 2000,
-            position: 'top-center'
         })
     }
 
     function deleteAllChat(chat_id) {
-        toast('该功能正在实现中，请稍等...', {
+        toast({
+            title: '该功能正在实现中，请稍等...',
+            status: 'warning',
+            position: 'top',
             duration: 2000,
-            position: 'top-center'
         })
     }
 
@@ -55,7 +64,6 @@ export default function ChatSidebar({ appName, chatList, selectChatId, setSelect
                         onClick={deleteAllChat}
                     >
                         <PiBroom/>
-                        <Toaster/>
                     </button>
                 </MyTooltip>
             </Flex>
@@ -77,14 +85,12 @@ export default function ChatSidebar({ appName, chatList, selectChatId, setSelect
                                     <MyTooltip label={item.isTopping? '取消置顶': '置顶'}>
                                         <LiaThumbtackSolid />
                                     </MyTooltip>
-                                    <Toaster/>
                                 </div>
                                 <div
                                     onClick={(e) => {deleteChat(e, item.id)}}
                                     className='absolute -right-2 -top-2 text-sm hover:text-red-600'
                                 >
                                     <IoIosClose />
-                                    <Toaster/>
                                 </div>
                             </Flex>
                         </button>

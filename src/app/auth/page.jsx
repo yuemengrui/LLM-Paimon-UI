@@ -11,10 +11,11 @@ import {useRouter} from 'next/navigation';
 import {auth} from "src/api_servers/auth";
 import {AiOutlineEyeInvisible} from "react-icons/ai";
 import {AiOutlineEye} from "react-icons/ai";
-import toast, {Toaster} from "react-hot-toast";
+import {useToast} from '@chakra-ui/react'
 
 export default function Auth() {
     const router = useRouter();
+    const toast = useToast()
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -36,11 +37,13 @@ export default function Auth() {
         if (response && response.token) {
             localStorage.setItem("Authorization", response.token)
             router.push('/home')
-        }
-        else {
-            toast.error(response.errmsg || '登录失败', {
+        } else {
+            toast({
+                title: '登录失败',
+                description: response.errmsg,
+                status: 'error',
+                position: 'top',
                 duration: 2000,
-                position: 'top-center'
             })
         }
     }
@@ -48,8 +51,7 @@ export default function Auth() {
     function show_password() {
         if (showPWD) {
             setShowPWD(false)
-        }
-        else {
+        } else {
             setShowPWD(true)
         }
     }
@@ -71,7 +73,9 @@ export default function Auth() {
                                 <Input placeholder='密码需大于等于6个字符'
                                        type={showPWD ? 'text' : 'password'}
                                        value={password}
-                                       onChange={(e) => {setPassword(e.target.value)}}
+                                       onChange={(e) => {
+                                           setPassword(e.target.value)
+                                       }}
                                 />
                                 <div className='absolute mt-3 right-2' onClick={show_password}>
                                     {showPWD ? <AiOutlineEye/> : <AiOutlineEyeInvisible/>}
@@ -85,7 +89,6 @@ export default function Auth() {
                         >
                             登录
                         </button>
-                        <Toaster/>
                         <div className='mt-2 text-sm'>未注册账号登录时会自动创建新账号</div>
                     </Flex>
                 </div>

@@ -18,3 +18,4 @@
  - [ ] 多模态检索
  - [ ] ASR & TTS
  - [ ] 应用高级编排
+ - [ ] Agent plugins

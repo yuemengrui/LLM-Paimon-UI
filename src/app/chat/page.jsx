@@ -9,9 +9,11 @@ import ChatSidebar from 'src/components/Chat/ChatSidebar';
 import AppList from "src/components/Chat/AppList";
 import {get_app_list, get_app_chat_list, get_app_chat_message_list} from "src/api_servers/app";
 import {create_app_chat} from "src/api_servers/app";
+import {useToast} from '@chakra-ui/react'
 
 
 export default function Chat() {
+    const toast = useToast()
     const [messageList, setMessageList] = useState([])
     const [appList, setAppList] = useState([])
     const [selectApp, setSelectApp] = useState({})
@@ -28,7 +30,7 @@ export default function Chat() {
         }
     }
 
-    async function getAppChatList(app_id){
+    async function getAppChatList(app_id) {
         if (app_id) {
             const res = await get_app_chat_list(app_id)
             if (res && res.length > 0) {
@@ -38,7 +40,7 @@ export default function Chat() {
         }
     }
 
-    async function getAppChatMessageList(chat_id){
+    async function getAppChatMessageList(chat_id) {
         if (chat_id) {
             const message_list = await get_app_chat_message_list(chat_id)
             if (message_list && message_list.length) {
@@ -47,7 +49,7 @@ export default function Chat() {
         }
     }
 
-    useEffect( () => {
+    useEffect(() => {
         getAppList()
     }, []);
 
@@ -64,7 +66,32 @@ export default function Chat() {
     }, [selectChatId]);
 
     async function newChat() {
-        await create_app_chat(selectApp.id)
+        const resp = await create_app_chat(selectApp.id)
+        if (resp) {
+            if (resp.errmsg) {
+                toast({
+                    title: '失败',
+                    description: resp.errmsg,
+                    status: 'error',
+                    position: 'top',
+                    duration: 2000,
+                })
+            } else {
+                toast({
+                    title: '成功',
+                    status: 'success',
+                    position: 'top',
+                    duration: 2000,
+                })
+            }
+        } else {
+            toast({
+                title: '失败',
+                status: 'error',
+                position: 'top',
+                duration: 2000,
+            })
+        }
         const chat_list_res = await get_app_chat_list(selectApp.id)
 
         if (chat_list_res.length > 0) {
@@ -77,7 +104,7 @@ export default function Chat() {
         setMessageList((prevList) => [...prevList, msg])
     }
 
-    const delMessage = (index=-1) => {
+    const delMessage = (index = -1) => {
         setMessageList(prevList => [...prevList.slice(0, index)])
     }
 
@@ -86,34 +113,43 @@ export default function Chat() {
     }
 
     return (
-            <div className='flex w-full bg-blue-50/30'>
-                {appList.length > 0 && (
-                    <>
-                        <AppList appList={appList} selectApp={selectApp} setSelectApp={setSelectApp} setCurrentModel={setCurrentModel} />
+        <div className='flex w-full bg-blue-50/30'>
+            {appList.length > 0 && (
+                <>
+                    <AppList appList={appList} selectApp={selectApp} setSelectApp={setSelectApp}
+                             setCurrentModel={setCurrentModel}/>
+                    <div className='w-[1px] h-full bg-gray-200'/>
+                    <div className='flex flex-1 border border-gray-200 bg-white rounded-3xl mt-4 mr-4 ml-4 mb-4'>
+                        <ChatSidebar appName={appList.filter((item) => item.id === selectApp.id)[0].name}
+                                     chatList={chatList} selectChatId={selectChatId} setSelectChatId={setSelectChatId}
+                                     newChat={newChat}/>
                         <div className='w-[1px] h-full bg-gray-200'/>
-                        <div className='flex flex-1 border border-gray-200 bg-white rounded-3xl mt-4 mr-4 ml-4 mb-4'>
-                            <ChatSidebar appName={appList.filter((item) => item.id === selectApp.id)[0].name} chatList={chatList} selectChatId={selectChatId} setSelectChatId={setSelectChatId} newChat={newChat} />
-                            <div className='w-[1px] h-full bg-gray-200'/>
-                            {selectChatId && (
-                                <>
-                                    <div className='w-full relative'>
-                                        <div className='h-[64px] px-6 py-5'>
-                                            <Flex gap={3}>
-                                                <div>{chatList.length ? chatList.filter((item) => item.id === selectChatId)[0].name || '新对话' : '新对话'}</div>
-                                                <Tag text={messageList.length + '条记录'}/>
-                                                 <Tag text={appList.filter((item) => item.id === selectApp.id)[0].llm_name}/>
-                                            </Flex>
-                                        </div>
-                                        <div className='h-[1px] w-full bg-gray-200'/>
-                                        {messageList.length ? (<MessageList selectApp={selectApp} currentModel={currentModel} selectChatId={selectChatId} messageList={messageList} addMessage={addMessage} delMessage={delMessage} updateMessage={updateMessage}/>) : (<Welcome/>)}
-                                        <ChatInput selectApp={selectApp} currentModel={currentModel} selectChatId={selectChatId} addMessage={addMessage} updateMessage={updateMessage}/>
+                        {selectChatId && (
+                            <>
+                                <div className='w-full relative'>
+                                    <div className='h-[64px] px-6 py-5'>
+                                        <Flex gap={3}>
+                                            <div>{chatList.length ? chatList.filter((item) => item.id === selectChatId)[0].name || '新对话' : '新对话'}</div>
+                                            <Tag text={messageList.length + '条记录'}/>
+                                            {/*<Tag text={appList.filter((item) => item.id === selectApp.id)[0].llm_name}/>*/}
+                                        </Flex>
                                     </div>
-                                </>
-                            )}
-                        </div>
+                                    <div className='h-[1px] w-full bg-gray-200'/>
+                                    {messageList.length ? (
+                                        <MessageList selectApp={selectApp} currentModel={currentModel}
+                                                     selectChatId={selectChatId} messageList={messageList}
+                                                     addMessage={addMessage} delMessage={delMessage}
+                                                     updateMessage={updateMessage}/>) : (<Welcome/>)}
+                                    <ChatInput selectApp={selectApp} currentModel={currentModel}
+                                               selectChatId={selectChatId} addMessage={addMessage}
+                                               updateMessage={updateMessage}/>
+                                </div>
+                            </>
+                        )}
+                    </div>
 
-                    </>
-                )}
-            </div>
+                </>
+            )}
+        </div>
     )
 }

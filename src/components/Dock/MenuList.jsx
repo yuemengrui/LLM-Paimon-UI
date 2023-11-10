@@ -30,7 +30,7 @@ export default function MenuList() {
         },
         {
             'root_path': 'appstore',
-            'pathname': '/appstore',
+            'pathname': '/appstore/list',
             'icon': <PiSquaresFourBold className='text-2xl' />,
             'name': '应用'
         },
