@@ -16,8 +16,7 @@ export async function get_knowledge_base_list() {
 
     if (response) {
         return response['list']
-    }
-    else {
+    } else {
         return []
     }
 }
@@ -77,8 +76,7 @@ export async function get_kb_data_list(kb_id) {
 
     if (response) {
         return response['list']
-    }
-    else {
+    } else {
         return []
     }
 }
@@ -104,4 +102,43 @@ export async function kb_data_import(kb_id, method_id, files) {
 
 }
 
+
+export async function get_kb_data_detail(data_id) {
+    const args = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('Authorization')
+        },
+        body: JSON.stringify({
+            "data_id": data_id,
+        })
+    }
+
+    const response = await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_KB_DATA_DETAIL, args)
+
+    console.log('response', response)
+
+    if (response) {
+        return response['list']
+    } else {
+        return []
+    }
+}
+
+
+export async function kb_data_delete(data_id) {
+    const args = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('Authorization')
+        },
+        body: JSON.stringify({
+            "data_id": data_id,
+        })
+    }
+
+    return await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_KB_DATA_DELETE, args)
+}
 
