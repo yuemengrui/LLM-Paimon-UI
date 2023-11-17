@@ -164,6 +164,22 @@ export async function create_app_chat(app_id, name = undefined) {
 
 }
 
+export async function delete_app_chat(chat_id) {
+    const args = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem('Authorization')
+        },
+        body: JSON.stringify({
+            "chat_id": chat_id,
+        })
+    }
+
+    return await http(process.env.NEXT_PUBLIC_PREFIX + process.env.NEXT_PUBLIC_APP_CHAT_DELETE, args)
+
+}
+
 
 export async function get_app_chat_message_list(chat_id) {
     const args = {

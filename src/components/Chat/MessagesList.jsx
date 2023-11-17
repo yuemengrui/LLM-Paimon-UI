@@ -220,39 +220,44 @@ export default function MessageList({
                                                 </MyTooltip>
                                             </Flex>
                                         </div>
-                                        <div
-                                            className='bg-pink-100 rounded-lg shadow-[0_2px_2px_2px_rgba(244,114,182,0.3)] text-sm mt-3 px-2 py-2'>
-                                            <Markdown>{message.content}</Markdown>
-                                            <Flex alignItems='center' mt='4' flexWrap='wrap' gap='2'>
-                                                <MyTooltip label='本次回答所关联的上下文对数'>
-                                                    <Tag
-                                                        text={`${message.response.history ? message.response.history.length : 0}对上下文`}/>
-                                                </MyTooltip>
-                                                <MyTooltip label='知识库中的引用'>
-                                                    <Tag
-                                                        text={`${message.response.retrieval ? message.response.retrieval.sources_len : 0}条引用`}
-                                                        onClick={() => showRetrieverData(message.response.retrieval.sources)}/>
-                                                </MyTooltip>
-                                                <MyTooltip label='本次请求总共使用的token数量'>
-                                                    <Tag
-                                                        text={`${message.response.usage ? message.response.usage.total_tokens : 0} tokens`}/>
-                                                </MyTooltip>
-                                                <MyTooltip label='本次请求所用时间'>
-                                                    <Tag
-                                                        text={`${message.response.time_cost ? message.response.time_cost.total : '0s'}`}/>
-                                                </MyTooltip>
-                                                {message.response.retrieval && message.response.retrieval.MultiQueryRetriever && (
-                                                    <MyTooltip label='MultiQueryRetriever'>
-                                                        <Tag text='MultiQueryRetriever'
-                                                             onClick={() => showRetrieverData(message.response.retrieval.MultiQueryRetriever)}/>
+                                        {message.type === 'image' ? (
+                                            <Image src={message.url} alt='image' width={message.width || 600}
+                                                   height={message.height || 600}/>
+                                        ) : (
+                                            <div
+                                                className='bg-pink-100 rounded-lg shadow-[0_2px_2px_2px_rgba(244,114,182,0.3)] text-sm mt-3 px-2 py-2'>
+                                                <Markdown>{message.content}</Markdown>
+                                                <Flex alignItems='center' mt='4' flexWrap='wrap' gap='2'>
+                                                    <MyTooltip label='本次回答所关联的上下文对数'>
+                                                        <Tag
+                                                            text={`${message.response.history ? message.response.history.length : 0}对上下文`}/>
                                                     </MyTooltip>
-                                                )}
-                                                <MyTooltip label='点击查看完整响应'>
-                                                    <Tag text='完整响应'
-                                                         onClick={() => showFullResponse(message.response)}/>
-                                                </MyTooltip>
-                                            </Flex>
-                                        </div>
+                                                    <MyTooltip label='知识库中的引用'>
+                                                        <Tag
+                                                            text={`${message.response.retrieval ? message.response.retrieval.sources_len : 0}条引用`}
+                                                            onClick={() => showRetrieverData(message.response.retrieval.sources)}/>
+                                                    </MyTooltip>
+                                                    <MyTooltip label='本次请求总共使用的token数量'>
+                                                        <Tag
+                                                            text={`${message.response.usage ? message.response.usage.total_tokens : 0} tokens`}/>
+                                                    </MyTooltip>
+                                                    <MyTooltip label='本次请求所用时间'>
+                                                        <Tag
+                                                            text={`${message.response.time_cost ? message.response.time_cost.total : '0s'}`}/>
+                                                    </MyTooltip>
+                                                    {message.response.retrieval && message.response.retrieval.MultiQueryRetriever && (
+                                                        <MyTooltip label='MultiQueryRetriever'>
+                                                            <Tag text='MultiQueryRetriever'
+                                                                 onClick={() => showRetrieverData(message.response.retrieval.MultiQueryRetriever)}/>
+                                                        </MyTooltip>
+                                                    )}
+                                                    <MyTooltip label='点击查看完整响应'>
+                                                        <Tag text='完整响应'
+                                                             onClick={() => showFullResponse(message.response)}/>
+                                                    </MyTooltip>
+                                                </Flex>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </li>

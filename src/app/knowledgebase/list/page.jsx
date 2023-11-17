@@ -32,6 +32,8 @@ export default function KnowledgeBase() {
     const [showCreateKBModal, setShowCreateKBModal] = useState(false)
     const [newKBName, setNewKBName] = useState('')
     const [selectEmbModelList, setSelectEmbModelList] = useState([])
+    const [showDeleteKBModal, setShowDeleteKBModal] = useState(false)
+    const [deleteKBInfo, setDeleteKBInfo] = useState(null)
 
     async function getKBList() {
         const res = await get_knowledge_base_list()
@@ -91,10 +93,17 @@ export default function KnowledgeBase() {
         }
     }
 
-    async function deleteKB(e, kb_id) {
+    async function deleteKB(e, kbInfo) {
         e.stopPropagation()
-        await kb_delete(kb_id)
+        setDeleteKBInfo(kbInfo)
+        setShowDeleteKBModal(true)
+    }
+
+    async function confirmDeleteKB() {
+        await kb_delete(deleteKBInfo.id)
         getKBList()
+        setShowDeleteKBModal(false)
+        setDeleteKBInfo(null)
     }
 
     return (
@@ -130,7 +139,7 @@ export default function KnowledgeBase() {
                                     ))}
                                 </ul>
                                 <RiDeleteBinLine className='absolute right-3 hover:text-red-600'
-                                                 onClick={(e) => deleteKB(e, item.id)}/>
+                                                 onClick={(e) => deleteKB(e, item)}/>
                             </Card>
                         </MyTooltip>
                     ))}
@@ -175,6 +184,21 @@ export default function KnowledgeBase() {
                             <Button border='1px' borderColor='gray.200' onClick={createKB}>
                                 确认
                             </Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+            )}
+            {showDeleteKBModal && (
+                <Modal isOpen={true} onClose={() => setShowDeleteKBModal(false)}>
+                    <ModalOverlay/>
+                    <ModalContent>
+                        <ModalHeader>确认删除 <span className='text-red-600'>{deleteKBInfo.name}</span> 吗？</ModalHeader>
+                        <ModalCloseButton/>
+                        <ModalBody>
+                            <div className='text-center'>删除后数据将无法恢复</div>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button border='1px' borderColor='gray.200' onClick={confirmDeleteKB}>确认删除</Button>
                         </ModalFooter>
                     </ModalContent>
                 </Modal>

@@ -4,7 +4,7 @@ import {Flex} from "@chakra-ui/react";
 import {SiOpenai} from "react-icons/si";
 import {useEffect, useState} from "react";
 import Settings from "src/components/AppStore/settings";
-import {get_app_info} from "../../../api_servers/app";
+import {get_app_info} from "src/api_servers/app";
 
 export default function APPInfo() {
     const searchParams = useSearchParams()

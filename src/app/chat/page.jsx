@@ -7,7 +7,7 @@ import Tag from "src/components/Tag/Tag";
 import {Flex} from "@chakra-ui/react";
 import ChatSidebar from 'src/components/Chat/ChatSidebar';
 import AppList from "src/components/Chat/AppList";
-import {get_app_list, get_app_chat_list, get_app_chat_message_list} from "src/api_servers/app";
+import {get_app_list, get_app_chat_list, get_app_chat_message_list, delete_app_chat} from "src/api_servers/app";
 import {create_app_chat} from "src/api_servers/app";
 import {useToast} from '@chakra-ui/react'
 
@@ -20,6 +20,8 @@ export default function Chat() {
     const [chatList, setChatList] = useState([])
     const [selectChatId, setSelectChatId] = useState(null)
     const [currentModel, setCurrentModel] = useState(undefined)
+    const [VLHistory, setVLHistory] = useState([])
+    const [VLPrompt, setVLPrompt] = useState([])
 
     async function getAppList() {
         const res = await get_app_list()
@@ -36,6 +38,9 @@ export default function Chat() {
             if (res && res.length > 0) {
                 setChatList(res)
                 setSelectChatId(res[0].id)
+            } else {
+                setChatList([])
+                setSelectChatId(null)
             }
         }
     }
@@ -45,9 +50,30 @@ export default function Chat() {
             const message_list = await get_app_chat_message_list(chat_id)
             if (message_list && message_list.length) {
                 setMessageList(message_list)
+
+                if (selectApp.name === '图文理解') {
+                    const vlprompt = []
+                    const reversedList = message_list.toReversed()
+                    for (let i = 0; i < reversedList.length; i++) {
+                        if (reversedList[i].response.history && reversedList[i].response.history.length > 0) {
+                            setVLHistory(reversedList[i].response.history)
+                            break
+                        } else {
+                            if (reversedList[i].role === 'user') {
+                                if (reversedList[i].type === 'image') {
+                                    vlprompt.push({'image': reversedList[i].url})
+                                } else {
+                                    vlprompt.push({'text': reversedList[i].content})
+                                }
+                            }
+                        }
+                    }
+                    setVLPrompt(vlprompt.reverse())
+                }
             }
         }
     }
+
 
     useEffect(() => {
         getAppList()
@@ -92,12 +118,47 @@ export default function Chat() {
                 duration: 2000,
             })
         }
-        const chat_list_res = await get_app_chat_list(selectApp.id)
-
-        if (chat_list_res.length > 0) {
-            setChatList(chat_list_res)
-            setSelectChatId(chat_list_res[0].id)
+        if (selectApp.name === '图文理解') {
+            setVLHistory([])
+            setVLPrompt([])
         }
+        getAppChatList(selectApp.id)
+
+    }
+
+    async function deleteChat(chat_id) {
+        const resp = await delete_app_chat(chat_id)
+        if (resp) {
+            if (resp.errmsg) {
+                toast({
+                    title: '删除失败',
+                    description: resp.errmsg,
+                    status: 'error',
+                    position: 'top',
+                    duration: 2000,
+                })
+            } else {
+                toast({
+                    title: '删除成功',
+                    status: 'success',
+                    position: 'top',
+                    duration: 2000,
+                })
+            }
+
+        } else {
+            toast({
+                title: '删除失败',
+                status: 'error',
+                position: 'top',
+                duration: 2000,
+            })
+        }
+        if (selectApp.name === '图文理解') {
+            setVLHistory([])
+            setVLPrompt([])
+        }
+        getAppChatList(selectApp.id)
     }
 
     const addMessage = (msg) => {
@@ -122,7 +183,7 @@ export default function Chat() {
                     <div className='flex flex-1 border border-gray-200 bg-white rounded-3xl mt-4 mr-4 ml-4 mb-4'>
                         <ChatSidebar appName={appList.filter((item) => item.id === selectApp.id)[0].name}
                                      chatList={chatList} selectChatId={selectChatId} setSelectChatId={setSelectChatId}
-                                     newChat={newChat}/>
+                                     newChat={newChat} deleteChat={deleteChat}/>
                         <div className='w-[1px] h-full bg-gray-200'/>
                         {selectChatId && (
                             <>
@@ -142,7 +203,9 @@ export default function Chat() {
                                                      updateMessage={updateMessage}/>) : (<Welcome/>)}
                                     <ChatInput selectApp={selectApp} currentModel={currentModel}
                                                selectChatId={selectChatId} addMessage={addMessage}
-                                               updateMessage={updateMessage}/>
+                                               updateMessage={updateMessage} VLHistory={VLHistory}
+                                               setVLHistory={setVLHistory} VLPrompt={VLPrompt}
+                                               setVLPrompt={setVLPrompt}/>
                                 </div>
                             </>
                         )}

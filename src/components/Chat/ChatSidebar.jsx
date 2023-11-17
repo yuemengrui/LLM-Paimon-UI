@@ -1,26 +1,42 @@
 'use client'
 import {SiOpenai} from "react-icons/si";
-import {Flex} from "@chakra-ui/react";
+import {
+    Button,
+    Flex,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay
+} from "@chakra-ui/react";
 import {PiBroom} from "react-icons/pi";
 import {PiChatTeardropDotsThin} from "react-icons/pi";
 import {IoIosClose} from "react-icons/io";
 import {LiaThumbtackSolid} from "react-icons/lia";
 import MyTooltip from "../Tooltip/Tooltip";
 import {useToast} from '@chakra-ui/react'
+import {useState} from "react";
+import {delete_app_chat} from "../../api_servers/app";
 
 
-export default function ChatSidebar({ appName, chatList, selectChatId, setSelectChatId, newChat }) {
+export default function ChatSidebar({appName, chatList, selectChatId, setSelectChatId, newChat, deleteChat}) {
 
     const toast = useToast()
+    const [showDeleteChatModal, setShowDeleteChatModal] = useState(false)
+    const [deleteChatId, setDeleteChatId] = useState(null)
 
-    function deleteChat(e, chat_id) {
+    function delete_chat(e, chat_id) {
         e.stopPropagation()
-        toast({
-            title: '该功能正在实现中，请稍等...',
-            status: 'warning',
-            position: 'top',
-            duration: 2000,
-        })
+        setShowDeleteChatModal(true)
+        setDeleteChatId(chat_id)
+    }
+
+    async function confirmDeleteChat() {
+        deleteChat(deleteChatId)
+        setShowDeleteChatModal(false)
+
     }
 
     function topping(e, chat_id) {
@@ -53,7 +69,7 @@ export default function ChatSidebar({ appName, chatList, selectChatId, setSelect
             </Flex>
             <Flex alignItems={'center'} mt={12}>
                 <button onClick={newChat}
-                    className='w-[156px]  border rounded-lg border-gray-100 shadow-[0_0_2px_2px_rgba(0,0,0,0.1)] px-4 py-1 hover:text-pink-400 hover:bg-pink-100'>
+                        className='w-[156px]  border rounded-lg border-gray-100 shadow-[0_0_2px_2px_rgba(0,0,0,0.1)] px-4 py-1 hover:text-pink-400 hover:bg-pink-100'>
                     <Flex alignItems={'center'} textAlign={'center'}>
                         <PiChatTeardropDotsThin className='ml-6'/><span className='ml-2'>新对话</span>
                     </Flex>
@@ -79,24 +95,44 @@ export default function ChatSidebar({ appName, chatList, selectChatId, setSelect
                                 <PiChatTeardropDotsThin className='ml-2'/>
                                 <span className='ml-2'>{item.name || '新对话'}</span>
                                 <div
-                                    onClick={(e) => {topping(e, item.id)}}
+                                    onClick={(e) => {
+                                        topping(e, item.id)
+                                    }}
                                     className='absolute right-2'
                                 >
-                                    <MyTooltip label={item.isTopping? '取消置顶': '置顶'}>
-                                        <LiaThumbtackSolid />
+                                    <MyTooltip label={item.isTopping ? '取消置顶' : '置顶'}>
+                                        <LiaThumbtackSolid/>
                                     </MyTooltip>
                                 </div>
                                 <div
-                                    onClick={(e) => {deleteChat(e, item.id)}}
+                                    onClick={(e) => {
+                                        delete_chat(e, item.id)
+                                    }}
                                     className='absolute -right-2 -top-2 text-sm hover:text-red-600'
                                 >
-                                    <IoIosClose />
+                                    <IoIosClose/>
                                 </div>
                             </Flex>
                         </button>
                     )
                 })}
             </Flex>
+            {showDeleteChatModal && (
+                <Modal isOpen={true} onClose={() => setShowDeleteChatModal(false)}>
+                    <ModalOverlay/>
+                    <ModalContent>
+                        <ModalHeader>确认删除该聊天记录吗？</ModalHeader>
+                        <ModalCloseButton/>
+                        <ModalBody>
+                            <div className='text-center'>删除后数据将无法恢复</div>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button border='1px' borderColor='gray.200' onClick={confirmDeleteChat}>确认删除</Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+            )}
         </div>
+
     )
 }

@@ -42,6 +42,8 @@ export default function AppStore() {
     const [newAppName, setNewAppName] = useState('')
     const [selectLLM, setSelectLLM] = useState(null)
     const [selectKB, setSelectKB] = useState(null)
+    const [showDeleteAppModal, setShowDeleteAppModal] = useState(false)
+    const [deleteAppInfo, setDeleteAppInfo] = useState(null)
 
     async function getAppList() {
         const res = await get_app_list()
@@ -166,9 +168,14 @@ export default function AppStore() {
         }
     }
 
-    async function delete_app(e, app_id) {
+    function delete_app(e, appInfo) {
         e.stopPropagation()
-        const resp = await app_delete(app_id)  // 调后台接口删除
+        setDeleteAppInfo(appInfo)
+        setShowDeleteAppModal(true)
+    }
+
+    async function confirmDeleteApp() {
+        const resp = await app_delete(deleteAppInfo.id)  // 调后台接口删除
         if (resp) {
             if (resp.errmsg) {
                 toast({
@@ -195,6 +202,8 @@ export default function AppStore() {
             })
         }
         getAppList() // 调后台接口获取新的 AppStore list
+        setShowDeleteAppModal(false)
+        setDeleteAppInfo(null)
     }
 
 
@@ -228,7 +237,7 @@ export default function AppStore() {
                                 {item.kb_name && (
                                     <div className='mt-1 text-center text-sm'>{'知识库：' + item.kb_name}</div>)}
                                 <RiDeleteBinLine className='absolute right-3 hover:text-red-600'
-                                                 onClick={(e) => delete_app(e, item.id)}/>
+                                                 onClick={(e) => delete_app(e, item)}/>
                             </Card>
                         </MyTooltip>
                     ))}
@@ -313,6 +322,21 @@ export default function AppStore() {
                         </ModalBody>
                         <ModalFooter>
                             <Button border='1px' borderColor='gray.200' onClick={createApp}>确认</Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+            )}
+            {showDeleteAppModal && (
+                <Modal isOpen={true} onClose={() => setShowDeleteAppModal(false)}>
+                    <ModalOverlay/>
+                    <ModalContent>
+                        <ModalHeader>确认删除 <span className='text-red-600'>{deleteAppInfo.name}</span> 吗？</ModalHeader>
+                        <ModalCloseButton/>
+                        <ModalBody>
+                            <div className='text-center'>删除后数据将无法恢复</div>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button border='1px' borderColor='gray.200' onClick={confirmDeleteApp}>确认删除</Button>
                         </ModalFooter>
                     </ModalContent>
                 </Modal>
