@@ -103,19 +103,23 @@ export default function Settings({appInfo, setAppInfo}) {
                 <Flex gap={20} alignItems={'center'}>
                     <div className='text-lg'>大模型</div>
                     <div className='ml-[20px]'>
-                        <Select
-                            w={'256px'}
-                            onChange={(e) => {
-                                setSelectLLM(e.target.value)
-                            }}
-                            value={selectLLM}
-                        >
-                            {llmList.map((item) => {
-                                return (
-                                    <option key={item.model_name}>{item.model_name}</option>
-                                )
-                            })}
-                        </Select>
+                        {appInfo.name === '图文理解' ? (
+                            <div>{appInfo.llm_name}</div>
+                        ) : (
+                            <Select
+                                w={'256px'}
+                                onChange={(e) => {
+                                    setSelectLLM(e.target.value)
+                                }}
+                                value={selectLLM}
+                            >
+                                {llmList.map((item) => {
+                                    return (
+                                        <option key={item.model_name}>{item.model_name}</option>
+                                    )
+                                })}
+                            </Select>
+                        )}
                     </div>
                 </Flex>
             </div>
