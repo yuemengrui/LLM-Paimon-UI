@@ -22,7 +22,7 @@ export async function get_knowledge_base_list() {
 }
 
 
-export async function kb_create(name, embedding_model_list) {
+export async function kb_create(name, embedding_model) {
     const args = {
         method: "POST",
         headers: {
@@ -31,7 +31,7 @@ export async function kb_create(name, embedding_model_list) {
         },
         body: JSON.stringify({
             "name": name,
-            "embedding_model_list": embedding_model_list
+            "embedding_model": embedding_model
         })
     }
 

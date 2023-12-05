@@ -30,7 +30,7 @@ function Markdown({ children, className = "", ...props }: Options) {
                 }
             }}
             remarkPlugins={[remarkGfm]}
-            className={`markdown prose dark:prose-invert ${className}`}
+            className={`whitespace-pre-wrap markdown prose dark:prose-invert ${className}`}
             {...props}
         >
             {children}

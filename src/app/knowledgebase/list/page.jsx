@@ -1,5 +1,7 @@
 'use client'
 import {
+    Radio,
+    RadioGroup,
     Button,
     Card,
     Grid, Input,
@@ -31,7 +33,7 @@ export default function KnowledgeBase() {
     const [embModelList, setEmbModelList] = useState([])
     const [showCreateKBModal, setShowCreateKBModal] = useState(false)
     const [newKBName, setNewKBName] = useState('')
-    const [selectEmbModelList, setSelectEmbModelList] = useState([])
+    const [selectEmbModel, setSelectEmbModel] = useState([])
     const [showDeleteKBModal, setShowDeleteKBModal] = useState(false)
     const [deleteKBInfo, setDeleteKBInfo] = useState(null)
 
@@ -65,7 +67,7 @@ export default function KnowledgeBase() {
     }
 
     async function createKB() {
-        if (!(newKBName && selectEmbModelList.length)) {
+        if (!(newKBName && selectEmbModel)) {
             toast({
                 title: '知识库名称和embedding模型不能为空',
                 status: 'error',
@@ -73,7 +75,7 @@ export default function KnowledgeBase() {
                 duration: 2000,
             })
         } else {
-            await kb_create(newKBName, selectEmbModelList)
+            await kb_create(newKBName, selectEmbModel)
             setNewKBName('')
             setShowCreateKBModal(false)
             getKBList()
@@ -133,11 +135,7 @@ export default function KnowledgeBase() {
                                 }}
                             >
                                 <div className='text-center text-blue-500 text-2xl'>{item.name}</div>
-                                <ul className='mt-2 text-center text-sm'>
-                                    {item.embedding_model_list.map((emb_model) => (
-                                        <li key={emb_model}>{emb_model}</li>
-                                    ))}
-                                </ul>
+                                <div className='mt-12 text-center text-sm'>{item.embedding_model}</div>
                                 <RiDeleteBinLine className='absolute right-3 hover:text-red-600'
                                                  onClick={(e) => deleteKB(e, item)}/>
                             </Card>
@@ -166,19 +164,14 @@ export default function KnowledgeBase() {
                             <Input value={newKBName} onChange={(e) => {
                                 setNewKBName(e.target.value)
                             }} placeholder={'请输入知识库名称...'}/>
-                            <div>请选择Embedding模型, 可多选, 最多选5个</div>
-                            <CheckboxGroup
-                                onChange={(e) => {
-                                    setSelectEmbModelList(e)
-                                }}
-                                colorScheme='green'
-                            >
-                                <Stack spacing={[1, 5]} direction={['row', 'column']}>
+                            <div>请选择Embedding模型</div>
+                            <RadioGroup onChange={setSelectEmbModel} value={selectEmbModel}>
+                                <Stack direction='column'>
                                     {embModelList.map((item) => (
-                                        <Checkbox key={item.model_name} value={item.model_name}>{item.model_name}</Checkbox>
+                                        <Radio key={item.model_name} value={item.model_name}>{item.model_name}</Radio>
                                     ))}
                                 </Stack>
-                            </CheckboxGroup>
+                            </RadioGroup>
                         </ModalBody>
                         <ModalFooter>
                             <Button border='1px' borderColor='gray.200' onClick={createKB}>

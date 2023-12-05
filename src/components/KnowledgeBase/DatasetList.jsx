@@ -20,6 +20,7 @@ import {
 import {RiDeleteBinLine} from "react-icons/ri";
 import {get_kb_data_detail, get_kb_data_list, kb_data_delete} from "src/api_servers/knowledge_base";
 import React, {useEffect, useState} from "react";
+import Image from "next/image";
 
 export default function DatasetList({kb_id}) {
     const toast = useToast()
@@ -60,8 +61,7 @@ export default function DatasetList({kb_id}) {
                 position: 'top',
                 duration: 2000,
             })
-        }
-        else {
+        } else {
             toast({
                 title: '删除失败',
                 description: resp.errmsg,
@@ -90,7 +90,23 @@ export default function DatasetList({kb_id}) {
                     </Flex>
                     <ul className='mt-12 px-12'>
                         {dataDetail.detail.map((item) => (
-                            <li key={item.id} className='list-decimal py-2 text-sm'>{item.content}</li>
+                            <div key={item.id} className='list-decimal py-2 mt-12 text-sm whitespace-pre-wrap'>
+                                <Flex gap={6} fontSize={'large'}>
+                                    <div>第{item.page}页</div>
+                                    <div>类型: {item.type}</div>
+                                </Flex>
+                                <div className='mt-2 border-2 px-2 py-2 border-dashed border-blue-400'>
+                                    {item.type === 'text' && (<div>{item.content}</div>)}
+                                    {item.type === 'table' && (
+                                        <Flex mt={2}>
+                                            <Image src={item.url} alt='image' width={600} height={600}/>
+                                            <div dangerouslySetInnerHTML = {{__html:item.html}}></div>
+                                        </Flex>
+                                    )}
+                                    {item.type === 'figure' && (
+                                        <Image src={item.url} alt='image' width={600} height={600}/>)}
+                                </div>
+                            </div>
                         ))}
                     </ul>
                 </div>
