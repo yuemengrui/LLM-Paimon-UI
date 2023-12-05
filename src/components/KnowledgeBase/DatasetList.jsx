@@ -94,6 +94,8 @@ export default function DatasetList({kb_id}) {
                                 <Flex gap={6} fontSize={'large'}>
                                     <div>第{item.page}页</div>
                                     <div>类型: {item.type}</div>
+                                    {item.type === 'table' && (<div>Table_Caption: {item.content || 'None'}</div>)}
+                                    {item.type === 'figure' && (<div>Figure_Caption: {item.content || 'None'}</div>)}
                                 </Flex>
                                 <div className='mt-2 border-2 px-2 py-2 border-dashed border-blue-400'>
                                     {item.type === 'text' && (<div>{item.content}</div>)}
